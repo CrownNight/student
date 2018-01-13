@@ -1,7 +1,14 @@
 import React from 'react';
 import {Layout} from 'antd';
+import SystemHeader from './headers'
+import SystemSider from './sider';
+import {BrowserRouter as Router} from 'react-router-dom';
+import Routes from "./routes/index";
+import createHistory from 'history/createBrowserHistory';
 
-const {Header,Content,Sider,Footer}=Layout;
+const history = createHistory();
+
+const {Content,Footer}=Layout;
 
 export default class App extends React.Component{
     constructor(){
@@ -10,14 +17,19 @@ export default class App extends React.Component{
 
     render(){
         return(
-            <Layout>
-                <Sider>456</Sider>
+            <Router history={history}>
                 <Layout>
-                    <Header style={{color:'#fff'}}>123</Header>
-                    <Content>789</Content>
+                    <SystemHeader/>
+                    <Layout>
+                        <SystemSider/>
+                        <Content>
+                           <Routes/>
+                        </Content>
+
+                    </Layout>
                     <Footer>1123</Footer>
                 </Layout>
-            </Layout>
+            </Router>
         )
     }
 }

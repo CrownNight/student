@@ -1,9 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './app';
-import './index.css';
-import createHistory from 'history/createBrowserHistory';
-const history = createHistory();
+import App from './app'
+import 'antd/dist/antd.css';
 
 ReactDOM.render(
     <App/>,
