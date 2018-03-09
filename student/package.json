@@ -85,5 +85,8 @@
     "webpack-hot-middleware": "^2.21.0",
     "webpack-merge": "^4.1.1",
     "zlib": "^1.0.5"
+  },
+  "dependencies": {
+    "mysql": "^2.15.0"
   }
 }

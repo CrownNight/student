@@ -1,5 +1,6 @@
 import React from 'react';
 import {Layout,Row, Col} from 'antd';
+import img from './image/timg.jpg';
 
 const {Header} =Layout;
 export default class SystemHeader extends React.Component {

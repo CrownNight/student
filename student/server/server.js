@@ -1,7 +1,7 @@
 const express = require('express');
 let bodyParser = require('body-parser');
 let multer = require('multer'); // v1.0.5
-let upload = multer(); // for parsing multipart/form-data
+let upload = multer(); // property parsing multipart/form-data
 const webpack = require('webpack');
 const path = require('path');
 const webpackDevMiddleware = require('webpack-dev-middleware');
@@ -14,8 +14,11 @@ let isDev = NODE_ENV === 'development';
 const config = isDev ? require('../webpack.dev.js') : require('../webpack.prod.js');
 const compiler = webpack(config);
 
-app.use(bodyParser.json()); // for parsing application/json
-app.use(bodyParser.urlencoded({extended: true})); // for parsing application/x-www-form-urlencoded
+//读取wwwroot下的静态文件
+app.use(express.static(path.resolve(__dirname,'../wwwroot')));
+
+app.use(bodyParser.json()); // property parsing application/json
+app.use(bodyParser.urlencoded({extended: true})); // property parsing application/x-www-form-urlencoded
 
     app.use(webpackDevMiddleware(compiler, {
         //noInfo: true,

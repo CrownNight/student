@@ -8,7 +8,7 @@ import createHistory from 'history/createBrowserHistory';
 
 const history = createHistory();
 
-const {Content,Footer}=Layout;
+const {Content}=Layout;
 
 export default class App extends React.Component{
     constructor(){
@@ -27,7 +27,6 @@ export default class App extends React.Component{
                         </Content>
 
                     </Layout>
-                    <Footer>1123</Footer>
                 </Layout>
             </Router>
         )

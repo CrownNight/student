@@ -1,5 +1,9 @@
 import React from 'react';
-import {Card,Col} from 'antd';
+import {Card,Col,Table} from 'antd';
+
+const columns=[
+    {title:''}
+]
 
 export default class HouseInfo extends React.Component{
     constructor() {
