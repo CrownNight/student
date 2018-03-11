@@ -10,11 +10,12 @@ const colums=[
     {title:'学号',dataIndex:'v4',key:'v4',render:(text)=>'12345456'},
     {title:'性别',dataIndex:'v5',key:'v5',render:(text)=>'男'},
     {title:'院系',dataIndex:'v6',key:'v6',render:(text)=>'信息科学与技术'},
-    {title:'操作',width:150,dataIndex:'v7',key:'v7',render:(text,record,index)=><AddUser/>}
+    {title:'宿舍',dataIndex:'v7',key:'v7',render:(text)=>'10-227'},
+    {title:'操作',width:150,dataIndex:'v8',key:'v8',render:(text,record,index)=><AddUser/>}
 ]
 
 const data=[
-    {key:1},{key:2},{key:3},{key:4},{key:5},{key:6}
+    {key:1},{key:2},{key:3},{key:4},{key:5},{key:6},{key:7},{key:8}
 ]
 
 export default class BasicInfo extends React.Component {

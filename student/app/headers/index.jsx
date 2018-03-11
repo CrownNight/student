@@ -1,8 +1,8 @@
 import React from 'react';
-import {Layout,Row, Col} from 'antd';
+import { Layout, Row, Col, Menu } from 'antd';
 import img from './image/timg.jpg';
 
-const {Header} =Layout;
+const { Header } = Layout;
 export default class SystemHeader extends React.Component {
     constructor() {
         super();
@@ -10,16 +10,18 @@ export default class SystemHeader extends React.Component {
 
     render() {
         return (
-            <Header style={{background:'#e9e9e9'}}>
-                <Row>
-                    <Col span={21}  style={{textAlign:'center'}}>
-                        <h1>CrowNight宿舍管理</h1></Col>
-                    <Col span={3} style={{textAlign:'center'}}>
-                        <span>登录</span>&nbsp;/&nbsp;
+            <Menu theme='dark'>
+                <Header>
+                    <Row>
+                        <Col span={21} style={{ textAlign: 'center' }}>
+                            <h1 style={{ color: '#fff' }}>CrowNight宿舍管理</h1></Col>
+                        <Col span={3} style={{ textAlign: 'center', color: '#fff' }}>
+                            <span>登录</span>&nbsp;/&nbsp;
                         <span>注册</span>
-                    </Col>
-                </Row>
-            </Header>
+                        </Col>
+                    </Row>
+                </Header>
+            </Menu>
         )
     }
 }

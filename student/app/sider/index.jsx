@@ -1,8 +1,9 @@
 import React from 'react';
-import {Layout, Menu, Icon} from 'antd';
-import {Link} from 'react-router-dom';
+import { Layout, Menu, Icon } from 'antd';
+import { Link } from 'react-router-dom';
 
-const {Sider} = Layout;
+const { Sider } = Layout;
+const SubMenu = Menu.SubMenu
 
 export default class SystemSider extends React.Component {
     constructor() {
@@ -10,39 +11,52 @@ export default class SystemSider extends React.Component {
     }
 
     render() {
+        const fontStyle = {
+            color: '#fff'
+        }
         return (
-                <Sider style={{height:600}}>
+            <Sider style={{ height: 690 }}>
                 <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
-                    <Menu.Item key="1">
-                        <Icon type="user"/>
-                        <span>
-                            <Link to='/basicInfo' style={{color: '#fff'}}>基本信息管理</Link>
-                        </span>
-                    </Menu.Item>
-                    <Menu.Item key="2">
-                        <Icon type="video-camera"/>
-                        <span>
-                            <Link to='/houseInfo' style={{color: '#fff'}}>宿舍信息管理</Link>
-                        </span>
-                    </Menu.Item>
-                    <Menu.Item key="3">
-                        <Icon type="upload"/>
-                        <span>
-                            <Link to='visreg' style={{color: '#fff'}}>来访登记</Link>
-                        </span>
-                    </Menu.Item>
-                    <Menu.Item key="4">
-                        <Icon type="user"/>
-                        <span>
-                            <Link to='property' style={{color: '#fff'}}>财产登记</Link>
-                        </span>
-                    </Menu.Item>
-                    <Menu.Item key="5">
-                        <Icon type="user"/>
-                        <span>
-                            <Link to='addRepir' style={{color: '#fff'}}>添加报修</Link>
-                        </span>
-                    </Menu.Item>
+                    <SubMenu title='学生信息管理'>
+                        <Menu.Item key="1">
+                            <Link to='/basicInfo' style={fontStyle}>基本信息管理</Link>
+                        </Menu.Item>
+                    </SubMenu>
+                   <SubMenu title='学生住宿管理'>
+                   <Menu.Item key='2-0'><Link to='/studentStay'>学生住宿信息</Link></Menu.Item>
+                   <Menu.Item key='2-1'><Link to='/applyStayOut'>申请外宿</Link></Menu.Item>
+                   <Menu.Item key='2-3'><Link to='/applyOut'>申请退宿</Link></Menu.Item>
+                   </SubMenu>
+                    <SubMenu title='宿舍信息管理'>
+                        <Menu.Item key="3-0">
+                            <Link to='/houseInfo' style={fontStyle}>房间信息管理</Link>
+                        </Menu.Item>
+                        <Menu.Item key="3-1">
+                            <Link to='addRepir' style={fontStyle}>添加报修</Link>
+                        </Menu.Item>
+                    </SubMenu>
+                    <SubMenu title='日常操作管理'>
+                        <Menu.Item key="4">
+                            <Link to='visreg' style={fontStyle}>访客信息登记</Link>
+                        </Menu.Item>
+                        <Menu.Item key="5">
+                            <Link to='repaire' style={fontStyle}>维修信息登记</Link>
+                        </Menu.Item>
+                        <Menu.Item key="6">
+                            <Link to='borrow' style={fontStyle}>物品借用登记</Link>
+                        </Menu.Item>
+                        <Menu.Item key="7">
+                            <Link to='discipline' style={fontStyle}>学生违纪登记</Link>
+                        </Menu.Item>
+                    </SubMenu>
+                    <SubMenu title='系统设置'>
+                    <Menu.Item key="10">
+                            <Link to='/addAdmin' style={fontStyle}>添加管理员</Link>
+                        </Menu.Item>
+                        <Menu.Item key="11">
+                            <Link to='/resetPas' style={fontStyle}>修改密码</Link>
+                        </Menu.Item>
+                    </SubMenu>
                 </Menu>
             </Sider>
 
