@@ -25,13 +25,14 @@ export default class UserEdit extends React.Component{
     }
 
     render(){
+        const {userName}=this.props.data
         const formItemLayout={
             labelCol:{span:4},
             wrapperCol:{span:20}
         }
         return(
             <div>
-                <a type='primary'  onClick={this.showModal.bind(this)}>张三</a>
+                <a type='primary'  onClick={this.showModal.bind(this)}>{userName}</a>
                 <Modal
                     onOk={this.handleOk.bind(this)}
                     onCancel={this.handleCancel.bind(this)}

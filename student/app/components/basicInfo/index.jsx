@@ -1,51 +1,50 @@
 import React from 'react';
-import { Row,Card, Col,Table} from 'antd';
+import { Row, Card, Col, Table ,message} from 'antd';
 import AddUser from './addUser';
 import UserEdit from './userEdit';
-import {webApi} from '../../utils';
+import { webApi } from '../../utils';
 
-const colums=[
-    {title:'编码',dataIndex:'v1',key:'v1',render:(text)=>'123456'},
-    {title:'姓名',dataIndex:'v2',key:'v2',render:(text)=><UserEdit/>},
-    {title:'电话',dataIndex:'v3',key:'v3',render:(text)=>'123456'},
-    {title:'学号',dataIndex:'v4',key:'v4',render:(text)=>'12345456'},
-    {title:'性别',dataIndex:'v5',key:'v5',render:(text)=>'男'},
-    {title:'院系',dataIndex:'v6',key:'v6',render:(text)=>'信息科学与技术'},
-    {title:'宿舍',dataIndex:'v7',key:'v7',render:(text)=>'10-227'},
-    {title:'操作',width:150,dataIndex:'v8',key:'v8',render:(text,record,index)=><AddUser/>}
-]
-
-const data=[
-    {key:1},{key:2},{key:3},{key:4},{key:5},{key:6},{key:7},{key:8}
+const colums = [
+    { title: '编码', dataIndex: 'userId', },
+    { title: '姓名', dataIndex: 'userName', render: (text, record) => <UserEdit data={record} /> },
+    { title: '电话', dataIndex: 'phone' },
+    { title: '学号', dataIndex: 'number' },
+    { title: '性别', dataIndex: 'sex', },
+    { title: '院系', dataIndex: 'class', },
+    { title: '宿舍', dataIndex: 'house' },
+    { title: '操作', width: 150, dataIndex: 'v8', render: (text, record, index) => <AddUser data={record} /> }
 ]
 
 export default class BasicInfo extends React.Component {
     constructor() {
-        super()
+        super();
+        this.state = { data: [] }
     }
 
     componentDidMount() {
-        webApi.get('/123').then(data=>{
-            debugger
-        })     
+        webApi.get('/getUserList').then(data => {
+           if(data.flag){
+               this.setState({data:data.returnValue})
+           }else{
+               message.error(data.errorMessage)
+           }
+        })
     }
     render() {
+        const { data } = this.state;
         return (
-           <div>
-               <div><h2></h2></div>
-               <Card hoverable='noHovering' title={<h1>学生信息</h1>}>
-                   <Row>
-                       <Col>
-                           <div style={{marginLeft:30}}>
-                               <Table
-                                   dataSource={data}
-                                   columns={colums}
-                               />
-                           </div>
-                       </Col>
-                   </Row>
-               </Card>
-           </div>
+            <div>
+                <Card hoverable='noHovering' title={<h3>学生信息</h3>}>
+                    <Row>
+                        <Col>
+                            <Table
+                                dataSource={data}
+                                columns={colums}
+                            />
+                        </Col>
+                    </Row>
+                </Card>
+            </div>
         )
     }
 }

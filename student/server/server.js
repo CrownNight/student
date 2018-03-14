@@ -1,7 +1,5 @@
 const express = require('express');
 let bodyParser = require('body-parser');
-let multer = require('multer'); // v1.0.5
-let upload = multer(); // property parsing multipart/form-data
 const webpack = require('webpack');
 const path = require('path');
 const webpackDevMiddleware = require('webpack-dev-middleware');
@@ -36,9 +34,31 @@ app.use(webpackDevMiddleware(compiler, {
 app.use(webpackHotMiddleware(compiler));
 
 
-app.get('/123', function (req, res) {
-    db.query('select * from user',function(err,rows){
-        console.log(rows);
+app.get('/getUserList', function (req, res) {
+    db.query('select * from user', function (err, rows) {
+        let result = {}
+        if (!err) {
+            let returnValue = [];
+            rows.map(item => {
+                returnValue.push({
+                    key: item.userId,
+                    userId: item.userId,
+                    userName: item.username,
+                    number: item.userNumber,
+                    class: item.userClass,
+                    phone: item.phone,
+                    sex: item.sex,
+                    isAdmin: item.isAdmin,
+                    house: item.house
+                })
+            })
+            result.returnValue=returnValue;
+            result.flag=true
+        }else{
+            result.flag=false;
+            result.errorMessage='获取列表失败'
+        }
+        res.send(result)
     })
 })
 
