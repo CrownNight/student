@@ -33,7 +33,7 @@ app.use(webpackDevMiddleware(compiler, {
 //热加载
 app.use(webpackHotMiddleware(compiler));
 
-
+//获取学生基本信息
 app.get('/getUserList', function (req, res) {
     db.query('select * from user', function (err, rows) {
         let result = {}

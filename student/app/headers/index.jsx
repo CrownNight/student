@@ -10,7 +10,7 @@ export default class SystemHeader extends React.Component {
 
     render() {
         return (
-            <Menu theme='dark'>
+            <Menu theme='dark' style={{position:'fixed',width:'100%',zIndex:1000}}>
                 <Header>
                     <Row>
                         <Col span={21} style={{ textAlign: 'center' }}>
