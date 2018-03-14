@@ -34,7 +34,7 @@ export default class AddModal extends React.Component {
         }
         return (
             <div>
-                <Button type='primary' onClick={this.showModal.bind(this)}>添加</Button>
+                <Button type='primary' onClick={this.showModal.bind(this)} size='small'>添加</Button>
                 <Modal
                     width={550}
                     title='添加人员'

@@ -15,7 +15,7 @@ export default class AddUser extends React.Component{
                <div style={{display:'inline-block'}}> <AddModal/></div>
                 <div style={{float:'right'}}>
                     <Popconfirm onConfirm={this.handleConfirm.bind(this)}>
-                        <Button type='ghost' style={{color:'red',marginLeft:10}}>删除</Button>
+                        <Button type='ghost' style={{color:'red',marginLeft:10}} size='small'>删除</Button>
                     </Popconfirm>
                 </div>
             </div>

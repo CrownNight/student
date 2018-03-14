@@ -2,6 +2,7 @@ import React from 'react';
 import { Row,Card, Col,Table} from 'antd';
 import AddUser from './addUser';
 import UserEdit from './userEdit';
+import {webApi} from '../../utils';
 
 const colums=[
     {title:'编码',dataIndex:'v1',key:'v1',render:(text)=>'123456'},
@@ -23,18 +24,23 @@ export default class BasicInfo extends React.Component {
         super()
     }
 
+    componentDidMount() {
+        webApi.get('/123').then(data=>{
+            debugger
+        })     
+    }
     render() {
         return (
            <div>
                <div><h2></h2></div>
-               <Card noHovering title={<h1>学生信息</h1>}>
+               <Card hoverable='noHovering' title={<h1>学生信息</h1>}>
                    <Row>
                        <Col>
                            <div style={{marginLeft:30}}>
                                <Table
                                    dataSource={data}
                                    columns={colums}
-                               size='large'/>
+                               />
                            </div>
                        </Col>
                    </Row>
