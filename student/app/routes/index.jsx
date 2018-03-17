@@ -6,7 +6,8 @@ import Visreg from '../components/visreg';
 import Accommodation from '../components/studentStay';
 import ApplyStayOut from '../components/applyStayOut';
 import ApplyOut from '../components/applyOut';
-import AddRepir from '../components/addRepir'
+import Repaire from '../components/repaireInfo';
+import Borrow from '../components/borrowInfo';
 import Login from '../login/login'
 
 
@@ -24,7 +25,8 @@ export default class Routes extends React.Component {
                 <Route path='/studentStay' component={Accommodation}/>
                 <Route path='/applyStayOut' component={ApplyStayOut}/>
                 <Route path='/applyOut' component={ApplyOut}/>
-                <Route path='/addRepir' component={AddRepir}/>
+                <Route path='/repaire' component={Repaire}/>
+                <Route path='/borrow' component={Borrow}/>
                 <Route path='/login' component={Login}/>
             </div>
         )

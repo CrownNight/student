@@ -1,11 +1,22 @@
 import React from 'react';
-import { Form, Button, Input, Row, Col, Card } from 'antd';
+import { Button, Form, Input, message, Row, Col, Modal } from 'antd';
 
 const FormItem = Form.Item;
+const TextArea = Input.TextArea;
 
-export default class AddRepir extends React.Component {
+export default class AddRepaire extends React.Component {
     constructor() {
-        super()
+        super();
+        this.state = { show: false }
+    }
+    showModal() {
+        this.setState({ show: true })
+    }
+    handleOk() {
+        this.setState({ show: false })
+    }
+    handleCancel() {
+        this.setState({ show: false })
     }
 
     render() {
@@ -13,23 +24,19 @@ export default class AddRepir extends React.Component {
             labelCol: { span: 4 },
             wrapperCol: { span: 20 }
         }
-        const cardStyle = {
-            width: '80%',
-            marginLeft: 30,
-            marginTop: 20
-        }
         return (
             <div>
-                <Card title={<h1>添加报修</h1>} style={cardStyle}>
+                <Button type='primary' onClick={this.showModal.bind(this)}>添加</Button>
+                <Modal title='添加报修信息' visible={this.state.show} onOk={this.handleOk.bind(this)} onCancel={this.handleCancel.bind(this)}>
                     <Form>
                         <Row>
                             <Col>
                                 <FormItem label='报修人姓名' {...formItemLayout}>
                                     <Input />
                                 </FormItem>
-                            </Col>
+                            </Col>                          
                             <Col>
-                                <FormItem label='院系及班级' {...formItemLayout}>
+                                <FormItem label='报修时间' {...formItemLayout}>
                                     <Input />
                                 </FormItem>
                             </Col>
@@ -40,16 +47,12 @@ export default class AddRepir extends React.Component {
                             </Col>
                             <Col>
                                 <FormItem label='描述' {...formItemLayout}>
-                                    <Input type='textarea' rows='10' placeholder='请描述报修详细信息' />
+                                    <Input.TextArea rows='5' placeholder='请描述报修详细信息' />
                                 </FormItem>
                             </Col>
                         </Row>
-                        <div style={{float:'right'}}>
-                            <Button type='primary'>确定</Button>
-                            <Button type='danger' style={{marginLeft:5}}>取消</Button>
-                        </div>
                     </Form>
-                </Card>
+                </Modal>
             </div>
         )
     }
