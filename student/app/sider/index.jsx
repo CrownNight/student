@@ -47,9 +47,9 @@ export default class SystemSider extends React.Component {
                         </Menu.Item>
                     </SubMenu>
                     <SubMenu title='系统设置'>
-                        <Menu.Item key="10">
+                        {/* <Menu.Item key="10">
                             <Link to='/addAdmin' style={fontStyle}>添加管理员</Link>
-                        </Menu.Item>
+                        </Menu.Item> */}
                         <Menu.Item key="11">
                             <Link to='/resetPas' style={fontStyle}>修改密码</Link>
                         </Menu.Item>

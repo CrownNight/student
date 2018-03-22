@@ -8,6 +8,7 @@ import ApplyStayOut from '../components/applyStayOut';
 import ApplyOut from '../components/applyOut';
 import Repaire from '../components/repaireInfo';
 import Borrow from '../components/borrowInfo';
+import Discipline from '../components/discipline';
 import Login from '../login/login'
 
 
@@ -27,6 +28,7 @@ export default class Routes extends React.Component {
                 <Route path='/applyOut' component={ApplyOut}/>
                 <Route path='/repaire' component={Repaire}/>
                 <Route path='/borrow' component={Borrow}/>
+                <Route path='/discipline' component={Discipline}/>
                 <Route path='/login' component={Login}/>
             </div>
         )

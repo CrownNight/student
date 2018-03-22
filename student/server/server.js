@@ -33,35 +33,110 @@ app.use(webpackDevMiddleware(compiler, {
 //热加载
 app.use(webpackHotMiddleware(compiler));
 
-//获取学生基本信息
+/*
+basicInfo的信息
+获取学生基本信息
+*/
 app.get('/getUserList', function (req, res) {
-    db.query('select * from user', function (err, rows) {
-        let result = {}
-        if (!err) {
-            let returnValue = [];
-            rows.map(item => {
-                returnValue.push({
-                    key: item.userId,
-                    userId: item.userId,
-                    userName: item.username,
-                    number: item.userNumber,
-                    class: item.userClass,
-                    phone: item.phone,
-                    sex: item.sex,
-                    isAdmin: item.isAdmin,
-                    house: item.house
+    let item = req.query;
+    let result = {}
+    let index = (item.index - 1) * (item.size)
+    db.query('select count(*) count from user', function (err1, rows1) {
+        if (!err1) {
+            result.total = rows1[0].count
+        }
+    })
+    setTimeout(() => {
+        db.query(`select * from user order by userId desc limit ${index},${item.size}`, function (err, rows) {
+            if (!err) {
+                let returnValue = [];
+                rows.map(item => {
+                    returnValue.push({
+                        key: item.userId,
+                        userId: item.userId,
+                        userName: item.username,
+                        number: item.userNumber,
+                        class: item.userClass,
+                        phone: item.phone,
+                        sex: item.sex,
+                        isAdmin: item.isAdmin,
+                        house: item.house
+                    })
                 })
+                result.returnValue = returnValue;
+
+
+                result.flag = true
+            } else {
+                result.flag = false;
+                result.errorMessage = '获取列表失败'
+            }
+
+            res.send(result)
+        }, 300)
+       
+    })
+})
+
+app.post('/updateUserinfo', function (req, res) {
+    let item = req.body;
+    let sql = `update user set username='${item.userName}',userNumber=${item.number},sex='${item.sex}',phone=${item.phone},userClass='${item.class}',house='${item.house}' where userId=${item.userId}`
+    db.query(sql, function (err, rows) {
+        let result = {};
+        if (!err) {
+            result.flag = true;
+            result.returnValue = '修改成功';
+            res.send(result);
+        }
+    })
+})
+
+app.post('/addUser', function (req, res) {
+    let item = req.body;
+    let number = []
+    let result = {}
+    let resu = {}
+    db.query('select userNumber from user ', function (err, rows) {
+        if (!err) {
+            for (let i = 0; i < rows.length; i++) {
+                if (item.number == rows[i].userNumber) {
+                    resu.number = rows[i].userNumber
+                }
+            }
+        }
+    })
+    setTimeout(() => {
+        if (resu.number) {
+            result.flag = true;
+            result.returnValue = '该学生已存在'
+            res.send(result);
+        } else {
+            let sql = `insert into user (userName,sex,phone,userNumber,userClass,house,isAdmin) values ('${item.userName}','${item.sex}','${item.phone}','${item.number}','${item.class}','${item.house}','否')`
+            db.query(sql, function (err, rows) {
+                if (!err) {
+                    result.flag = true;
+                    result.returnValue = '添加成功'
+                    res.send(result)
+                }
             })
-            result.returnValue=returnValue;
-            result.flag=true
-        }else{
-            result.flag=false;
-            result.errorMessage='获取列表失败'
+        }
+    }, 1000)
+
+})
+
+app.post('/deleteUser', function (req, res) {
+    let item = req.body;
+    let result = {}
+    let sql = `delete from user where userId=${item.userId}`;
+    db.query(sql, function (err, rows) {
+        if (!err) {
+            result.flag = true;
+        } else {
+            result.flag = false
         }
         res.send(result)
     })
 })
-
 
 
 

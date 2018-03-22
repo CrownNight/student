@@ -31,7 +31,7 @@ export default class Accommodation extends React.Component{
                                <Table
                                    dataSource={data}
                                    columns={columns}
-                               size='large'/>
+                               />
                            </div>
                        </Col>
                    </Row>

@@ -1,38 +1,78 @@
 import React from 'react';
-import {Form,Input,Modal,Row,Col,message,Radio} from 'antd';
+import { Form, Input, Modal, Row, Col, message, Radio, Button, Popconfirm } from 'antd';
+import { webApi } from '../../utils'
 
 const FormItem = Form.Item;
+const RadioGroup = Radio.Group;
 
-export default class UserEdit extends React.Component{
+class UserEdit extends React.Component {
     constructor() {
         super()
-        this.state={
-            show:false
+        this.state = {
+            show: false
         }
     }
     showModal() {
+        let item = this.props.data
+        this.props.form.setFieldsValue(item)
         this.setState({
-            show:true
+            show: true
         })
     }
-    handleOk(){
-        this.setState({
-            show:false
+    handleOk() {
+        this.props.form.validateFields((err, value) => {
+            if (err) return;
+
+            webApi.post('/updateUserInfo', value).then(data => {
+                if (data.flag) {
+                    message.success(data.returnValue)
+                    if (this.props.callBack) {
+                        this.props.callBack(data.flag)
+                    }
+                    this.setState({
+                        show: false
+                    })
+                } else {
+                    message.error('修改失败')
+                }
+            })
+
         })
+
     }
     handleCancel() {
-        this.setState({show:false})
+        this.setState({ show: false })
     }
 
-    render(){
-        const {userName}=this.props.data
-        const formItemLayout={
-            labelCol:{span:4},
-            wrapperCol:{span:20}
+    handleConfirm() {
+        const { userId } = this.props.data;
+        let searchCondition={};
+        searchCondition.userId=userId
+        webApi.post('/deleteUser', searchCondition).then(data => {
+            if (data.flag) {
+                message.info('删除成功')
+                if(this.props.callBack){
+                    this.props.callBack(data.flag)
+                }
+            } else {
+                message.error('删除失败')
+            }
+        })
+
+    }
+
+    render() {
+        const { getFieldDecorator, setFieldsValue } = this.props.form;
+        const formItemLayout = {
+            labelCol: { span: 4 },
+            wrapperCol: { span: 20 }
         }
-        return(
+        return (
             <div>
-                <a type='primary'  onClick={this.showModal.bind(this)}>{userName}</a>
+                <Button type='primary' size='small' onClick={this.showModal.bind(this)}>编辑</Button>
+                <Popconfirm onConfirm={this.handleConfirm.bind(this)} title='确认删除?' okText='确认' cancelText='取消'>
+                    <Button type='ghost' style={{ color: 'red', marginLeft: 10 }} size='small'>删除</Button>
+                </Popconfirm>
                 <Modal
                     onOk={this.handleOk.bind(this)}
                     onCancel={this.handleCancel.bind(this)}
@@ -41,26 +81,55 @@ export default class UserEdit extends React.Component{
                     <Form>
                         <Row gutter={16}>
                             <Col>
-                                <FormItem label='编码' {...formItemLayout}>
-                                    <Input disabled/>
+                                <FormItem label='姓名' {...formItemLayout} style={{ display: 'none' }}>
+                                    <Col>{
+                                        getFieldDecorator('userId')(
+                                            <Input />
+                                        )
+                                    }</Col>
                                 </FormItem>
                                 <FormItem label='姓名' {...formItemLayout}>
-                                    <Col><Input/></Col>
+                                    <Col>{
+                                        getFieldDecorator('userName', {
+                                            rules: [{ required: true, message: '姓名不能为空' }]
+                                        })(
+                                            <Input />
+                                        )
+                                    }</Col>
                                 </FormItem>
                                 <FormItem label='性别' {...formItemLayout}>
                                     <Col offset={1}>
-                                        <Radio>男</Radio>
-                                        <Radio>女</Radio>
+                                        {getFieldDecorator('sex', {
+                                            rules: [{ required: true }]
+                                        })(
+                                            <RadioGroup>
+                                                <Radio value='男'>男</Radio>
+                                                <Radio value='女'>女</Radio>
+                                            </RadioGroup>
+                                        )}
                                     </Col>
                                 </FormItem>
                                 <FormItem label='电话' {...formItemLayout}>
-                                    <Col><Input/></Col>
+                                    <Col>{getFieldDecorator('phone', {
+                                        rules: [{ required: true }]
+                                    })(
+                                        <Input />
+                                    )}</Col>
                                 </FormItem>
                                 <FormItem label='学号' {...formItemLayout}>
-                                    <Col><Input/></Col>
+                                    <Col>{getFieldDecorator('number', {
+                                        rules: [{ required: true }]
+                                    })(<Input />)}</Col>
                                 </FormItem>
                                 <FormItem label='院系' {...formItemLayout}>
-                                    <Col><Input/></Col>
+                                    <Col>{getFieldDecorator('class', {
+                                        rules: [{ required: true }]
+                                    })(<Input />)}</Col>
+                                </FormItem>
+                                <FormItem label='宿舍' {...formItemLayout}>
+                                    <Col>{getFieldDecorator('house', {
+                                        rules: [{ required: true }]
+                                    })(<Input />)}</Col>
                                 </FormItem>
                             </Col>
                         </Row>
@@ -71,3 +140,5 @@ export default class UserEdit extends React.Component{
         )
     }
 }
+UserEdit = Form.create()(UserEdit)
+export default UserEdit
