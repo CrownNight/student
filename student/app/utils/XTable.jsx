@@ -34,7 +34,7 @@ export default class XTable extends React.Component {
                         onChange={this.handleChange.bind(this)}
                     />
                 </div>
-                <div style={{ float: 'right', marginTop: 10, marginRight: 10 }}><span style={{ fontSize: 22 }}>共{total}条</span></div>
+                <div style={{ float: 'right', marginTop: 10, marginRight: 10 }}><span style={{ fontSize: 22 }}>共&nbsp;{total}&nbsp;条</span></div>
             </div>
         )
     }
