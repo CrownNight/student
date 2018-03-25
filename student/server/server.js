@@ -1,5 +1,6 @@
 const express = require('express');
 let bodyParser = require('body-parser');
+let moment = require('moment');
 const webpack = require('webpack');
 const path = require('path');
 const webpackDevMiddleware = require('webpack-dev-middleware');
@@ -339,8 +340,88 @@ app.post('/deleteHouse', function (req, res) {
     })
 })
 
+/*
+来访信息登记api
+*/
 
+app.get('/getRegisterInfo', function (req, res) {
+    let result = {};
+    let item = req.query;
+    let index = (item.index - 1) * item.size;
+    let sql = `select * from register where type='${item.type}' order by id desc limit ${index},${item.size}`
+    db.query(`select count(*) count from register where type='${item.type}'`, function (err, rows) {
+        if (err != null) return;
 
+        result.total = rows[0].count;
+        db.query(sql, function (e, row) {
+            if (e != null) return;
+
+            let data = [];
+            row.map(key => {
+                data.push({
+                    key: key.id,
+                    id: key.id,
+                    studentName: key.name,
+                    visName: key.visName,
+                    startTime: key.startTime,
+                    relationship: key.relationship,
+                    idCard: key.idCard,
+                    des: key.Des,
+                    endTime: key.endTime,
+                    status: key.status,
+                    repaireHouse: key.repaireHouse,
+                    class: key.class,
+                    borrowSth: key.borrowSth,
+                    discipline: key.discipline
+                })
+            })
+            result.flag = true;
+            result.returnValue = data;
+            res.send(result)
+        })
+    })
+})
+app.post('/updateRegisterInfo', function (req, res) {
+    let result = {};
+    let item = req.body;
+    let sql = `update register set name='${item.studentName ? item.studentName : ''}',visName='${item.visName ? item.visName : ''}',
+    startTime='${item.startTime ? item.startTime : ''}',endTime='${item.endTime ? item.endTime : ''}',
+    relationship='${item.relationship ? item.relationship : ''}',idCard='${item.idCard ? item.idCard : ''}',
+    Des='${item.des ? item.des : ''}',status='${item.status ? item.status : ''}',repaireHouse='${item.repaireHouse ? item.repaireHouse : ''}',
+    class='${item.class ? item.class : ''}',borrowSth='${item.borrowSth ? item.borrowSth : ''}',discipline='${item.discipline ? item.discipline : ''}' 
+    where id=${item.id}`;
+
+    db.query(sql, function (err, rows) {
+        result.flag = err == null ? true : false;
+        result.returnValue = err == null ? '修改成功' : '修改失败，请重试。。。';
+        res.send(result)
+    })
+})
+app.post('/deleteRegisterInfo', function (req, res) {
+    let result = {};
+    let item = req.body;
+    let sql = `delete from register where id=${item.id}`;
+    db.query(sql, function (err, rows) {
+        result.flag = err == null ? true : false;
+        result.returnValue = err == null ? '删除成功' : '删除失败，请重试。。。';
+        res.send(result);
+    })
+})
+app.post('/addRegisterInfo', function (req, res) {
+    let result = {};
+    let item = req.body;
+    let sql = `insert into register (name,visName,startTime,endTime,relationship,idCard,Des,status,repaireHouse,class,borrowSth,discipline,type) values 
+    ('${item.studentName ? item.studentName : ''}','${item.visName ? item.visName : ''}','${item.startTime ? item.startTime : ''}','${item.endTime ? item.endTime : ''}',
+    '${item.relationship ? item.relationship : ''}','${item.idCard ? item.idCard : ''}','${item.des ? item.des : ''}','${item.status ? item.status : ''}',
+    '${item.repaireHouse ? item.repaireHouse : ''}','${item.class ? item.class : ''}','${item.borrowSth ? item.borrowSth : ''}','${item.discipline ? item.discipline : ''}',
+    '${item.type}')`;
+
+    db.query(sql, function (err, rows) {
+        result.flag = err == null ? true : false;
+        result.returnValue = err == null ? '添加成功' : '添加失败，请重试。。。'
+        res.send(result)
+    })
+})
 
 
 
