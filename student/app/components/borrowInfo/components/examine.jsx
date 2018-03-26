@@ -10,7 +10,7 @@ class Examine extends React.Component {
         super();
         this.state = {
             show: false,
-            status: '为归还'
+            status: '未归还'
         }
     }
     showModal() {
