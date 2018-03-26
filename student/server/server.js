@@ -349,7 +349,7 @@ app.get('/getRegisterInfo', function (req, res) {
     let item = req.query;
     let index = (item.index - 1) * item.size;
     let sql = `select * from register where type='${item.type}' order by id desc limit ${index},${item.size}`
-    db.query(`select count(*) count from register where type='${item.type}'`, function (err, rows) {
+    db.query(`select count(*) count from register where type='${item.type}'`, function (err, rows) {      
         if (err != null) return;
 
         result.total = rows[0].count;
@@ -415,10 +415,39 @@ app.post('/addRegisterInfo', function (req, res) {
     '${item.relationship ? item.relationship : ''}','${item.idCard ? item.idCard : ''}','${item.des ? item.des : ''}','${item.status ? item.status : ''}',
     '${item.repaireHouse ? item.repaireHouse : ''}','${item.class ? item.class : ''}','${item.borrowSth ? item.borrowSth : ''}','${item.discipline ? item.discipline : ''}',
     '${item.type}')`;
-
     db.query(sql, function (err, rows) {
+        console.log(err)
         result.flag = err == null ? true : false;
         result.returnValue = err == null ? '添加成功' : '添加失败，请重试。。。'
+        res.send(result)
+    })
+    // db.query(`select type,startTime,name,visName from register`, function (e, row) {
+    //     let resu = ''
+    //     if (e != null) {
+    //         row.map(key => {
+    //             if (key.startTime == item.startTime && key.type == item.type && key.name == item.studentName && key.visName == item.visName) {
+    //                 resu = 1
+    //             };
+    //         })
+    //         console.log(resu)
+    //         if (resu == 1) {
+    //             result.flag = true;
+    //             result.returnValue = '同一天不能添加相同的来访信息';
+    //             res.send(result)
+    //         } else {
+
+    //         }
+    //     }
+    // })
+})
+
+app.post('/examineRegisterInfo', function (req, res) {
+    let result = {};
+    let item = req.body;
+    let sql = `update register set status='${item.status}',endTime='${item.endTime}' where id=${item.id}`;
+    db.query(sql, function (err, rows) {
+        result.flag = err != null ? false : true;
+        result.returnValue = err != null ? '审核失败，请重试。。。' : '审核成功';
         res.send(result)
     })
 })
