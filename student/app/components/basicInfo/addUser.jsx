@@ -36,7 +36,10 @@ class AddUser extends React.Component {
                 })
             })
         })
+    }
 
+    handleCancel(){
+        this.setState({visibale:false})
     }
 
     render() {
@@ -53,6 +56,7 @@ class AddUser extends React.Component {
                     title='添加人员'
                     visible={this.state.visibale}
                     onOk={this.handleOk.bind(this)}
+                    onCancel={this.handleCancel.bind(this)}
                     okText='确认'
                     cancelText='取消'
                 >
@@ -86,9 +90,19 @@ class AddUser extends React.Component {
                                         rules: [{ required: true, message: '学号不能为空' }]
                                     })(<Input maxlength='15' />)}</Col>
                                 </FormItem>
-                                <FormItem label='院系及班级' {...formItemLayout}>
-                                    <Col>{getFieldDecorator('class', {
-                                        rules: [{ required: true, message: '院系及班级不能为空' }]
+                                <FormItem label='学院' {...formItemLayout}>
+                                    <Col>{getFieldDecorator('profession', {
+                                        rules: [{ required: true, message: '学院不能为空' }]
+                                    })(<Input />)}</Col>
+                                </FormItem>
+                                <FormItem label='专业' {...formItemLayout}>
+                                    <Col>{getFieldDecorator('college', {
+                                        rules: [{ required: true, message: '专业不能为空' }]
+                                    })(<Input />)}</Col>
+                                </FormItem>
+                                <FormItem label='班级' {...formItemLayout}>
+                                    <Col>{getFieldDecorator('grade', {
+                                        rules: [{ required: true, message: '班级不能为空' }]
                                     })(<Input />)}</Col>
                                 </FormItem>
                                 <FormItem label='宿舍' {...formItemLayout}>

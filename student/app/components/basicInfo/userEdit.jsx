@@ -121,9 +121,19 @@ class UserEdit extends React.Component {
                                         rules: [{ required: true }]
                                     })(<Input />)}</Col>
                                 </FormItem>
-                                <FormItem label='院系' {...formItemLayout}>
-                                    <Col>{getFieldDecorator('class', {
-                                        rules: [{ required: true }]
+                                <FormItem label='学院' {...formItemLayout}>
+                                    <Col>{getFieldDecorator('profession', {
+                                        rules: [{ required: true, message: '学院不能为空' }]
+                                    })(<Input />)}</Col>
+                                </FormItem>
+                                <FormItem label='专业' {...formItemLayout}>
+                                    <Col>{getFieldDecorator('college', {
+                                        rules: [{ required: true, message: '专业不能为空' }]
+                                    })(<Input />)}</Col>
+                                </FormItem>
+                                <FormItem label='班级' {...formItemLayout}>
+                                    <Col>{getFieldDecorator('grade', {
+                                        rules: [{ required: true, message: '班级不能为空' }]
                                     })(<Input />)}</Col>
                                 </FormItem>
                                 <FormItem label='宿舍' {...formItemLayout}>

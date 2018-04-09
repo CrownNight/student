@@ -10,7 +10,8 @@ import Repaire from '../components/repaireInfo';
 import Borrow from '../components/borrowInfo';
 import Discipline from '../components/discipline';
 import Login from '../login/login'
-
+import FrontHeader from '../headers/frontHeader'
+import AddNews from '../components/addNews'
 
 export default class Routes extends React.Component {
     constructor() {
@@ -20,16 +21,18 @@ export default class Routes extends React.Component {
     render() {
         return (
             <div>
-                <Route path='/basicInfo' component={BasicInfo}/>
-                <Route path='/houseInfo' component={HouseInfo}/>
-                <Route path='/visreg' component={Visreg}/>
-                <Route path='/studentStay' component={Accommodation}/>
-                <Route path='/applyStayOut' component={ApplyStayOut}/>
-                <Route path='/applyOut' component={ApplyOut}/>
-                <Route path='/repaire' component={Repaire}/>
-                <Route path='/borrow' component={Borrow}/>
-                <Route path='/discipline' component={Discipline}/>
-                <Route path='/login' component={Login}/>
+                {/* <Route path='/front/news' component={FrontHeader}/> */}
+                <Route path='/backstage/basicInfo' component={BasicInfo}/>
+                <Route path='/backstage/houseInfo' component={HouseInfo}/>
+                <Route path='/backstage/visreg' component={Visreg}/>
+                <Route path='/backstage/studentStay' component={Accommodation}/>
+                <Route path='/backstage/applyStayOut' component={ApplyStayOut}/>
+                <Route path='/backstage/applyOut' component={ApplyOut}/>
+                <Route path='/backstage/repaire' component={Repaire}/>
+                <Route path='/backstage/borrow' component={Borrow}/>
+                <Route path='/backstage/discipline' component={Discipline}/>
+                {/* <Route path='/backstage/login' component={Login}/> */}
+                <Route path='/backstage/addnews' component={AddNews}/>
             </div>
         )
     }

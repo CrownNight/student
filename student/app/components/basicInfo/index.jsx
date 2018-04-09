@@ -48,7 +48,9 @@ export default class BasicInfo extends React.Component {
             { title: '电话', dataIndex: 'phone' },
             { title: '学号', dataIndex: 'number' },
             { title: '性别', dataIndex: 'sex', },
-            { title: '院系及班级', dataIndex: 'class', },
+            { title: '学院', dataIndex: 'profession', },
+            { title: '专业', dataIndex: 'college', },
+            { title: '班级', dataIndex: 'grade', },
             { title: '宿舍', dataIndex: 'house' },
             { title: '操作', width: 150, dataIndex: 'v8', render: (text, record, index) => <UserEdit data={record} callBack={this.callBack.bind(this)} /> }
         ]

@@ -34,6 +34,34 @@ app.use(webpackDevMiddleware(compiler, {
 //热加载
 app.use(webpackHotMiddleware(compiler));
 
+
+
+/*
+登录注册
+*/
+app.post('/userLogin', function (req, res) {
+    let item = req.body;
+    let result = {};
+    let sql = `select * from user where username='${item.username}' and password='${item.password}'`;
+    db.query(sql, function (err, rows) {
+        console.log(rows)
+        if (err) {
+            result.flag = false;
+            result.returnValue = '登录失败，请重试。。。';
+            res.send(result)
+        } else {
+            if (rows[0] == undefined) {
+                result.flag = false;
+                result.returnValue = '用户名或密码错误';
+                res.send(result)
+            } else {
+                result.flag = true;
+                result.returnValue = rows
+                res.send(result);
+            }
+        }
+    })
+})
 /*
 basicInfo的信息
 获取学生基本信息
@@ -48,7 +76,7 @@ app.get('/getUserList', function (req, res) {
         }
     })
     setTimeout(() => {
-        db.query(`select * from user order by userId desc limit ${index},${item.size}`, function (err, rows) {
+        db.query(`select * from user where isAdmin='否' order by userId desc limit ${index},${item.size}`, function (err, rows) {
             if (!err) {
                 let returnValue = [];
                 rows.map(item => {
@@ -57,12 +85,13 @@ app.get('/getUserList', function (req, res) {
                         userId: item.userId,
                         userName: item.username,
                         number: item.userNumber,
-                        class: item.userClass,
                         phone: item.phone,
                         sex: item.sex,
                         isAdmin: item.isAdmin,
                         house: item.house,
-
+                        profession: item.profession,
+                        grade: item.grade,
+                        college: item.college
                     })
                 })
                 result.returnValue = returnValue;
@@ -80,7 +109,7 @@ app.get('/getUserList', function (req, res) {
 
 app.post('/updateUserinfo', function (req, res) {
     let item = req.body;
-    let sql = `update user set username='${item.userName}',userNumber=${item.number},sex='${item.sex}',phone=${item.phone},userClass='${item.class}',house='${item.house}' where userId=${item.userId}`
+    let sql = `update user set username='${item.userName}',userNumber=${item.number},sex='${item.sex}',phone=${item.phone},house='${item.house}',profession='${item.profession}',college='${item.college}',grade='${item.grade}' where userId=${item.userId}`
     db.query(sql, function (err, rows) {
         let result = {};
         if (!err) {
@@ -95,33 +124,30 @@ app.post('/addUser', function (req, res) {
     let item = req.body;
     let number = []
     let result = {}
-    let resu = {}
+    let resu = ''
     db.query('select userNumber from user ', function (err, rows) {
         if (!err) {
             for (let i = 0; i < rows.length; i++) {
                 if (item.number == rows[i].userNumber) {
-                    resu.number = rows[i].userNumber
+                    resu = 1
                 }
+            }
+            if (resu == 1) {
+                result.flag = true;
+                result.returnValue = '该学生已存在'
+                res.send(result);
+            } else {
+                let sql = `insert into user (userName,sex,phone,userNumber,profession,house,isAdmin,college,grade) values ('${item.userName}','${item.sex}','${item.phone}','${item.number}','${item.profession}','${item.house}','否','${item.college}','${item.grade}')`
+                db.query(sql, function (err, rows) {
+                    if (!err) {
+                        result.flag = true;
+                        result.returnValue = '添加成功'
+                        res.send(result)
+                    }
+                })
             }
         }
     })
-    setTimeout(() => {
-        if (resu.number) {
-            result.flag = true;
-            result.returnValue = '该学生已存在'
-            res.send(result);
-        } else {
-            let sql = `insert into user (userName,sex,phone,userNumber,userClass,house,isAdmin) values ('${item.userName}','${item.sex}','${item.phone}','${item.number}','${item.class}','${item.house}','否')`
-            db.query(sql, function (err, rows) {
-                if (!err) {
-                    result.flag = true;
-                    result.returnValue = '添加成功'
-                    res.send(result)
-                }
-            })
-        }
-    }, 1000)
-
 })
 
 app.post('/deleteUser', function (req, res) {
@@ -349,7 +375,7 @@ app.get('/getRegisterInfo', function (req, res) {
     let item = req.query;
     let index = (item.index - 1) * item.size;
     let sql = `select * from register where type='${item.type}' order by id desc limit ${index},${item.size}`
-    db.query(`select count(*) count from register where type='${item.type}'`, function (err, rows) {      
+    db.query(`select count(*) count from register where type='${item.type}'`, function (err, rows) {
         if (err != null) return;
 
         result.total = rows[0].count;
@@ -454,7 +480,65 @@ app.post('/examineRegisterInfo', function (req, res) {
 
 
 
+/*
+个人信息
+*/
 
+app.get('/getPersonalInfo', function (req, res) {
+    let item = req.query;
+    let result = {};
+    let sql = `select * from user where userId=${item.id}`;
+    db.query(sql, function (err, rows) {
+        result.flag = err != null ? false : true;
+        result.returnValue = err != null ? '获取个人信息失败' : rows;
+        res.send(result)
+    })
+})
+
+app.post('/updatePersonalInfo', function (req, res) {
+    let item = req.body;
+    let result = {};
+    let sql = `update user set username='${item.username}',userNumber='${item.number}',phone='${item.number}',college='${item.college}',profession='${item.profession}',
+    grade='${item.grade}',sex='${item.sex}',house='${item.house}',idCard='${item.idCard}' where userId=${item.id}`;
+    db.query(sql, function (err, rows) {
+        result.flag = err != null ? false : true;
+        result.returnValue = err != null ? '修改失败，请重试...' : '修改成功';
+        res.send(result);
+    })
+})
+
+/*
+新闻和公告信息
+*/
+
+app.get('/getNewsList', function (req, res) {
+    let item = req.query;
+    let result = {};
+    let index = (item.index - 1) * item.size
+    let sql = `select * from news where type='${item.type}' order by id desc limit ${index},${item.size}`;
+    let sql1 = `select count(*) count from news where type='${item.type}' `
+    db.query(sql1, function (e, row) {
+        if (e != null) return;
+        result.total = row[0].count;
+        db.query(sql, function (err, rows) {
+            result.flag = err != null ? false : true;
+            result.returnValue = err != null ? '获取列表失败' : rows;
+            res.send(result);
+        })
+    })
+})
+app.post('/addNewsList',function(req,res){
+    let item=req.body;
+    let result={};
+    let sql=`insert into news (type,ad,adTitle,news,newsTitle) values ('${item.type}',
+    '${item.type=='ad' ? item.content:''}','${item.type=='ad'?item.title:''}',
+    '${item.type=='new'?item.content:''}','${item.type=='new'?item.title:''}')`
+    db.query(sql,function(err,rows){
+        result.flag=err!=null?false:true;
+        result.returnValue=err!=null?'添加失败，请重试。。。':'添加成功';
+        res.send(result);
+    })
+})
 
 
 
