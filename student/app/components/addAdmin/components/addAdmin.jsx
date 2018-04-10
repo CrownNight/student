@@ -1,11 +1,11 @@
 import React from 'react';
 import { Input, Modal, Button, Form, Row, Col, Radio, Checkbox, message } from 'antd';
-import { webApi } from '../../utils';
+import { webApi } from '../../../utils';
 
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
-class AddUser extends React.Component {
+class AddAdmin extends React.Component {
     constructor() {
         super();
         this.state = {
@@ -22,7 +22,7 @@ class AddUser extends React.Component {
         this.props.form.validateFields((err, value) => {
             if (err) return;
 
-            value.type='否'
+            value.type='是'
             webApi.post('/addUser', value).then(data => {
                 if (data.flag) {
                     message.success(data.returnValue)
@@ -88,33 +88,8 @@ class AddUser extends React.Component {
                                 </FormItem>
                                 <FormItem label='身份证' {...formItemLayout}>
                                     <Col>{getFieldDecorator('idCard', {
-                                        rules: [{ required: true, max: 11, message: '身份证不能为空' }]
+                                        rules: [{ required: true,  message: '身份证不能为空' }]
                                     })(<Input  />)}</Col>
-                                </FormItem>
-                                <FormItem label='学号' {...formItemLayout}>
-                                    <Col>{getFieldDecorator('number', {
-                                        rules: [{ required: true, message: '学号不能为空' }]
-                                    })(<Input maxlength='15' />)}</Col>
-                                </FormItem>
-                                <FormItem label='学院' {...formItemLayout}>
-                                    <Col>{getFieldDecorator('profession', {
-                                        rules: [{ required: true, message: '学院不能为空' }]
-                                    })(<Input />)}</Col>
-                                </FormItem>
-                                <FormItem label='专业' {...formItemLayout}>
-                                    <Col>{getFieldDecorator('college', {
-                                        rules: [{ required: true, message: '专业不能为空' }]
-                                    })(<Input />)}</Col>
-                                </FormItem>
-                                <FormItem label='班级' {...formItemLayout}>
-                                    <Col>{getFieldDecorator('grade', {
-                                        rules: [{ required: true, message: '班级不能为空' }]
-                                    })(<Input />)}</Col>
-                                </FormItem>
-                                <FormItem label='宿舍' {...formItemLayout}>
-                                    <Col>{getFieldDecorator('house', {
-                                        rules: [{ required: true, message: '宿舍不能为空' }]
-                                    })(<Input />)}</Col>
                                 </FormItem>
                             </Col>
                         </Row>
@@ -125,5 +100,5 @@ class AddUser extends React.Component {
     }
 }
 
-AddUser = Form.create()(AddUser);
-export default AddUser
+AddAdmin = Form.create()(AddAdmin);
+export default AddAdmin

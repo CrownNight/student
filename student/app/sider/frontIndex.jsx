@@ -58,11 +58,11 @@ export default class FrontIndex extends React.Component {
                 </SubMenu>
                 <Menu.Item key="person" style={{ marginTop: 5 }}>
                     <Link to='/front/personinfo' />个人信息
-                </Menu.Item>
+                </Menu.Item>          
                 <SubMenu  title={<span className="avatar"><img src={avater} alt="头像" className='img' /><i className="on bottom b-white" /></span>} style={{marginTop:5,marginLeft:700}}>
                     <MenuItemGroup title="用户中心">
-                        <Menu.Item key="setting:4">你好 - {this.state.username}</Menu.Item>
-                        {/* <Menu.Item key="setting:5">个人信息</Menu.Item> */}
+                        <Menu.Item key="setting:4">你好 - {this.state.username}</Menu.Item>     
+                        <Menu.Item key="setting:5"><Link to='/front/resetpassword'/>修改密码</Menu.Item>                
                         <Menu.Item key="logout"><span onClick={this.logOut.bind(this)}>退出登录</span></Menu.Item>
                     </MenuItemGroup>
                     {/* <MenuItemGroup title="设置中心">

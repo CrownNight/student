@@ -44,7 +44,6 @@ app.post('/userLogin', function (req, res) {
     let result = {};
     let sql = `select * from user where username='${item.username}' and password='${item.password}'`;
     db.query(sql, function (err, rows) {
-        console.log(rows)
         if (err) {
             result.flag = false;
             result.returnValue = '登录失败，请重试。。。';
@@ -62,21 +61,85 @@ app.post('/userLogin', function (req, res) {
         }
     })
 })
+/**
+ * 注册
+ */
+app.post('/register', function (req, res) {
+    let item = req.body;
+    let result = {};
+    let sql1 = `select userId from user where idCard='${item.idCard}'`;
+    let sql = `insert into user (isAdmin,username,phone,idCard,password,sex) values ('${item.type}','${item.username}','${item.phone}',
+    '${item.idCard}','${item.pass}','${item.sex}')`
+    db.query(sql, function (err, rows) {
+        if (err != null) return;
+
+        db.query(sql1, function (e, row) {
+            result.flag = e != null ? false : true;
+            result.returnValue = e != null ? '注册失败，请重试...' : row;
+            res.send(result)
+        })
+    })
+})
+
+/**
+ * 获取不同专业的人数
+ */
+app.post('/getDataForStudent', function (req, res) {
+    let result = {};
+    let item = req.body;
+    let arr = [];
+    item.map(key => {
+        db.query(`select count(*) count from user where college='${key}'`, function (err, rows) {
+            if (err != null) return;
+
+            result.flag = true
+            arr.push({ count: rows[0].count, college: key })
+        })
+    })
+
+    setTimeout(() => {
+        result.returnValue = arr;
+        res.send(result)
+    }, 300)
+})
+/**
+ * 退宿外宿不同状态人数
+ */
+app.get('/getCountForStatus', function (req, res) {
+    let result = {};
+    let arr = []
+    let text = [1, 2, 3]
+    text.map(i => {
+        db.query(`select count(*) count from house where isPass='${i}'`, function (err, rows) {
+            if (err != null) return;
+
+            result.flag = true;
+            arr.push({
+                value: rows[0].count, number: i
+            })
+        })
+    })
+    setTimeout(() => {
+        result.returnValue = arr;
+        res.send(result);
+    }, 300)
+})
 /*
 basicInfo的信息
 获取学生基本信息
 */
+
 app.get('/getUserList', function (req, res) {
     let item = req.query;
     let result = {}
     let index = (item.index - 1) * (item.size)
-    db.query('select count(*) count from user', function (err1, rows1) {
+    db.query(`select count(*) count from user where isAdmin='${item.type}'`, function (err1, rows1) {
         if (!err1) {
             result.total = rows1[0].count
         }
     })
     setTimeout(() => {
-        db.query(`select * from user where isAdmin='否' order by userId desc limit ${index},${item.size}`, function (err, rows) {
+        db.query(`select * from user where isAdmin='${item.type}' order by userId desc limit ${index},${item.size}`, function (err, rows) {
             if (!err) {
                 let returnValue = [];
                 rows.map(item => {
@@ -91,7 +154,8 @@ app.get('/getUserList', function (req, res) {
                         house: item.house,
                         profession: item.profession,
                         grade: item.grade,
-                        college: item.college
+                        college: item.college,
+                        idCard: item.idCard
                     })
                 })
                 result.returnValue = returnValue;
@@ -109,7 +173,9 @@ app.get('/getUserList', function (req, res) {
 
 app.post('/updateUserinfo', function (req, res) {
     let item = req.body;
-    let sql = `update user set username='${item.userName}',userNumber=${item.number},sex='${item.sex}',phone=${item.phone},house='${item.house}',profession='${item.profession}',college='${item.college}',grade='${item.grade}' where userId=${item.userId}`
+    let sql = `update user set username='${item.userName}',userNumber=${item.number ? item.number : ''},sex='${item.sex}',phone=${item.phone},
+    house='${item.house ? item.house : ''}',profession='${item.profession ? item.profession : ''}',
+    college='${item.college ? item.college : ''}',grade='${item.grade ? item.grade : ''}',idCard='${item.idCard}' where userId=${item.userId}`
     db.query(sql, function (err, rows) {
         let result = {};
         if (!err) {
@@ -134,10 +200,11 @@ app.post('/addUser', function (req, res) {
             }
             if (resu == 1) {
                 result.flag = true;
-                result.returnValue = '该学生已存在'
+                result.returnValue = '该信息已存在'
                 res.send(result);
             } else {
-                let sql = `insert into user (userName,sex,phone,userNumber,profession,house,isAdmin,college,grade) values ('${item.userName}','${item.sex}','${item.phone}','${item.number}','${item.profession}','${item.house}','否','${item.college}','${item.grade}')`
+                let sql = `insert into user (userName,sex,phone,userNumber,profession,house,isAdmin,college,grade,idCard) values ('${item.userName}','${item.sex}','${item.phone}','${item.number ? item.number : ''}',
+                '${item.profession ? item.profession : ''}','${item.house ? item.house : ''}','${item.type}','${item.college ? item.college : ''}','${item.grade ? item.grade : ''}','${item.idCard}')`
                 db.query(sql, function (err, rows) {
                     if (!err) {
                         result.flag = true;
@@ -170,10 +237,10 @@ app.get('/getListInfo', function (req, res) {
     let item = req.query;
     let index = (item.index - 1) * item.size;
     let result = {}
-    db.query(`select count(*) count from house`, function (err, rows) {
+    db.query(`select count(*) count from house where isPass='${item.type}'`, function (err, rows) {
         if (!err) {
             result.total = rows[0].count;
-            let sql = `select * from house order by userId desc limit ${index},${item.size}`;
+            let sql = `select * from house where isPass='${item.type!=''?item.type:''}' order by userId desc limit ${index},${item.size}`;
             db.query(sql, function (e, data) {
                 if (!e) {
                     let value = []
@@ -527,19 +594,32 @@ app.get('/getNewsList', function (req, res) {
         })
     })
 })
-app.post('/addNewsList',function(req,res){
-    let item=req.body;
-    let result={};
-    let sql=`insert into news (type,ad,adTitle,news,newsTitle) values ('${item.type}',
-    '${item.type=='ad' ? item.content:''}','${item.type=='ad'?item.title:''}',
-    '${item.type=='new'?item.content:''}','${item.type=='new'?item.title:''}')`
-    db.query(sql,function(err,rows){
-        result.flag=err!=null?false:true;
-        result.returnValue=err!=null?'添加失败，请重试。。。':'添加成功';
+app.post('/addNewsList', function (req, res) {
+    let item = req.body;
+    let result = {};
+    let sql = `insert into news (type,ad,adTitle,news,newsTitle) values ('${item.type}',
+    '${item.type == 'ad' ? item.content : ''}','${item.type == 'ad' ? item.title : ''}',
+    '${item.type == 'new' ? item.content : ''}','${item.type == 'new' ? item.title : ''}')`
+    db.query(sql, function (err, rows) {
+        result.flag = err != null ? false : true;
+        result.returnValue = err != null ? '添加失败，请重试。。。' : '添加成功';
         res.send(result);
     })
 })
 
+/**
+ * 修改密码
+ */
+app.post('/updatePassword', function (req, res) {
+    let item = req.body;
+    let result = {};
+    let sql = `update user set password='${item.newpass}' where username='${item.username}' and idCard='${item.idCard}'`;
+    db.query(sql, function (err, rows) {
+        result.flag = err != null ? false : true;
+        result.returnValue = err != null ? '修改失败，请重试。。。' : '修改成功'
+        res.send(result)
+    })
+})
 
 
 

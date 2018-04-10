@@ -1,70 +1,88 @@
 import React from 'react';
-import { Row, Card, Col, Table, message, Pagination } from 'antd';
-import AddUser from './addUser';
-import UserEdit from './userEdit';
-import { webApi,XTable } from '../../utils';
+import echarts from 'echarts';
+import ReactEcharts from 'echarts-for-react';
+import { Row, Col, Card, message, Icon } from 'antd';
+import { Link } from 'react-router-dom'
+import { webApi } from '../../utils'
 
-export default class BasicInfo extends React.Component {
+
+
+export default class XEcharts extends React.Component {
     constructor() {
         super();
         this.state = {
-            data: [],
-            index: 1,
-            size: 5,
-            total: 0
+            data: []
         }
     }
-
     componentDidMount() {
-        const { index, size } = this.state;
-        this.getUserList(index, size);
-    }
-    getUserList(index, size) {
-        webApi.get('/getUserList?index=' + index + '&size=' + size).then(data => {
+        let arr = [];
+        let college = ['信息科学与工程', '土木工程', '生物产业', '外国语', '电子信息工程', '自动化', '政治', '艺术', '医护', '体育']
+        webApi.post('/getDataForStudent', college).then(data => {
             if (data.flag) {
-                this.setState({ data: data.returnValue,total:data.total })
+                data.returnValue.map(key => {
+                    arr.push({ value: key.count, name: key.college })
+                })
+                this.setState({ data: arr })
             } else {
-                message.error(data.errorMessage)
+                message.error(data.returnValue)
             }
         })
     }
 
-    callBack(status) {
-        const { index, size } = this.state;
-        if (status) {
-            this.getUserList(index, size);
-        }
-    }
-
-    handleChange(index, size) {
-        this.setState({ index: index, size: size });
-        this.getUserList(index, size);
-    }
     render() {
-        const { data, index, size, total } = this.state;
-        const columns = [
-            { title: '编码', dataIndex: 'userId', },
-            { title: '姓名', dataIndex: 'userName' },
-            { title: '电话', dataIndex: 'phone' },
-            { title: '学号', dataIndex: 'number' },
-            { title: '性别', dataIndex: 'sex', },
-            { title: '学院', dataIndex: 'profession', },
-            { title: '专业', dataIndex: 'college', },
-            { title: '班级', dataIndex: 'grade', },
-            { title: '宿舍', dataIndex: 'house' },
-            { title: '操作', width: 150, dataIndex: 'v8', render: (text, record, index) => <UserEdit data={record} callBack={this.callBack.bind(this)} /> }
-        ]
+        const option = {
+            backgroundColor: {
+                repeat: 'repeat'
+            },
+            title: {
+                text: '各学院的人数',
+                textStyle: {
+                    color: '#235894'
+                }
+            },
+            tooltip: {},
+            series: [{
+                name: '人数',
+                type: 'pie',
+                selectedMode: 'single',
+                selectedOffset: 30,
+                clockwise: true,
+                label: {
+                    normal: {
+                        textStyle: {
+                            fontSize: 18,
+                            color: '#235894'
+                        }
+                    }
+                },
+                labelLine: {
+                    normal: {
+                        lineStyle: {
+                            color: '#235894'
+                        }
+                    }
+                },
+                data: this.state.data,
+            }]
+        };
         return (
-            <div>
-                <Card hoverable='noHovering' title={<h1>学生信息</h1>}>
-                    <div style={{ position: 'relative', bottom: 5, left: '95%' }}><AddUser callBack={this.callBack.bind(this)} /></div>
-                    <Row>
-                        <Col>
-                           <XTable data={data} columns={columns} index={index} size={size} total={total} onChange={this.handleChange.bind(this)}/>                          
-                        </Col>
-                    </Row>
-                </Card>
-            </div>
+            <Row gutter={16}>
+                <Col md={24}>
+                    <div>
+                        <Card bordered={false}>
+                            <ReactEcharts
+                                option={option}
+                                style={{ height: '500px', width: '800px' }}
+                                className={'react_for_echarts'}
+                            />
+                        </Card>
+                        <div style={{ textAlign: 'center', height: 500 }}>
+                            <Link to='/backstage/basicinfo/list' style={{fontSize:16}}>查看学生详细列表<Icon type="caret-right" /></Link>
+                        </div>
+                    </div>
+                </Col>
+
+            </Row>
         )
     }
 }

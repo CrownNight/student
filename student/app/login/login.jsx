@@ -30,6 +30,10 @@ class Login extends React.Component {
             })
         })
     }
+
+    handleRegister(){
+        this.props.history.push('/register')
+    }
     render() {
         const { getFieldDecorator, setFieldsValue } = this.props.form;
         const formItemLayout = {
@@ -67,7 +71,7 @@ class Login extends React.Component {
                             </div>
                             <div style={{ float: 'right' }}>
                                 <Button type='primary' onClick={this.handleSubmit.bind(this)} style={{ marginRight: 10 }}>登录</Button>
-                                <Button onClick={this.handleSubmit.bind(this)}>注册</Button>
+                                <Button onClick={this.handleRegister.bind(this)}>注册</Button>
                             </div>
                         </Form>
                     </Card>

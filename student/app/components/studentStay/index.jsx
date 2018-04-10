@@ -1,75 +1,91 @@
 import React from 'react';
-import { Card, Row, Col, message, Button } from 'antd';
-import EditPersonalInfo from './components/editPersonalInfo';
-import { webApi, XTable } from '../../utils';
-import Examine from './components/examine'
+import ReactEcharts from 'echarts-for-react';
+import { Card, message, Row, Col, Icon } from 'antd';
+import { Link } from 'react-router-dom'
+import { webApi } from '../../utils';
 
-
-
-export default class Accommodation extends React.Component {
+export default class Index extends React.Component {
     constructor() {
-        super()
+        super();
         this.state = {
-            data: [],
-            index: 1,
-            size: 5,
-            total: 0
+            data: []
         }
     }
     componentDidMount() {
-        const {index,size}=this.state
-        this.getList(index,size)
-    }
-    getList(index,size){
-        webApi.get('/getListInfo?index='+index+'&size='+size).then(data=>{
-            if(data.flag){
-                this.setState({
-                    data:data.returnValue,
-                    total:data.total
+        let item = []
+        let text = ''
+        webApi.get('/getCountForStatus').then(data => {
+            if (data.flag) {
+                data.returnValue.map(key => {
+                    if (key.number == 1) {
+                        text = '已通过'
+                    } else if (key.number == 2) {
+                        text = '未通过'
+                    } else {
+                        text = '待审核'
+                    }
+                    item.push({ value: key.value, name: text })
                 })
+                this.setState({
+                    data: item
+                })
+            } else {
+                message.error('获取信息失败')
             }
         })
     }
 
-    handleChange(index, size) {
-        this.setState({index,size});
-        this.getList(index,size)
-    }
-    callBack(sta) {
-        const {index,size}=this.state
-        if(sta){this.getList(index,size)}
-    }
     render() {
-        const { data, index, size, total } = this.state
-        const columns = [
-            { title: '姓名', dataIndex: 'username', render: (text, record) => <EditPersonalInfo data={record} callBack={this.callBack.bind(this)} /> },
-            { title: '院系', dataIndex: 'department',  },
-            { title: '专业', dataIndex: 'major',  },
-            { title: '班级', dataIndex: 'grade',  },
-            { title: '宿舍及房间号', dataIndex: 'house',  },
-            { title: '是否外宿', dataIndex: 'isStayOut', },
-            { title: '外宿原因', dataIndex: 'isStayOutDes',  },
-            { title: '是否退宿', dataIndex: 'isTuisu', },
-            { title: '退宿原因', dataIndex: 'isTuisuDes',  },
-            { title: '审核描述', dataIndex: 'isPassDes',  },
-            { title: '审核', dataIndex: 'isPass',render:(text,record)=><Examine data={record} callBack={this.callBack.bind(this)}/>  }
-        ]
+        const options = {
+            title: {
+                text: '退宿或外宿信息',
+                textStyle: {
+                    color: '#235894'
+                }
+            },
+            tooltip: {},
+            series: [{
+                name: '人数',
+                type: 'pie',
+                selectedMode: 'single',
+                selectedOffset: 30,
+                clockwise: true,
+                label: {
+                    normal: {
+                        textStyle: {
+                            fontSize: 18,
+                            color: '#235894'
+                        }
+                    }
+                },
+                labelLine: {
+                    normal: {
+                        lineStyle: {
+                            color: '#235894'
+                        }
+                    }
+                },
+                data: this.state.data,
+            }]
+        }
         return (
             <div>
-                <Card title={<h1>学生外宿管理</h1>}>
-                    <Row>
-                        <Col>
-                            <XTable
-                                data={data}
-                                columns={columns}
-                                index={index}
-                                total={total}
-                                size={size}
-                                onChange={this.handleChange.bind(this)}
+                <Row gutter={16}>
+                    <Col md={24}>
+                        <Card>
+                            <ReactEcharts
+                                option={options}
+                                style={{ height: '500px', width: '800px' }}
+                                className={'react_for_echarts'}
                             />
-                        </Col>
-                    </Row>
-                </Card>
+                            <div style={{ textAlign: 'center', height: 500 }}>
+                                <Link to={{ pathname: '/backstage/studentStay/list', state: 3 }} style={{ fontSize: 16 }}><div>查看待审核列表<Icon type="caret-right" /></div></Link>
+                                <Link to={{ pathname: '/backstage/studentStay/list', state: 1 }} style={{ fontSize: 16 }}><div>查看已通过列表<Icon type="caret-right" /></div></Link>
+                                <Link to={{ pathname: '/backstage/studentStay/list', state: 2 }} style={{ fontSize: 16 }}><div>查看未通过列表<Icon type="caret-right" /></div></Link>
+                            </div>
+                        </Card>
+                    </Col>
+                </Row>
             </div>
         )
     }

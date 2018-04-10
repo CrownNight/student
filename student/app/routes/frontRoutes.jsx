@@ -9,6 +9,7 @@ import AddRepaire from '../frontComponents/frontRegister/registerRepaire'
 import AddBorrow from '../frontComponents/frontRegister/registerBorrow'
 import PersonInfo from '../frontComponents/personalInfo'
  import ShowNews from '../frontComponents/showNews'
+ import ResetPassword from '../frontComponents/resetpas'
 import App from '../app'
 
 
@@ -27,8 +28,10 @@ export default class FrontRoutes extends React.Component{
                 <Route path='/front/registervis' component={AddVisiterInfo}/>
                 <Route path='/front/registerrepaire' component={AddRepaire}/>
                 <Route path='/front/registerborrow' component={AddBorrow}/>
-                <Route path='/front/personinfo' component={PersonInfo}/>     
+                <Route path='/front/personinfo' component={PersonInfo}/>  
+                <Route path='/front/resetpassword' component={ResetPassword}/>   
                 <Route path='/front/news/info' component={ShowNews}/>
+               
             </div>
         )
     }

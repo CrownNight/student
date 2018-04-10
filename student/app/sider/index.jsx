@@ -34,25 +34,25 @@ export default class SystemSider extends React.Component {
                     </SubMenu>
                     <SubMenu title='日常操作管理'>
                         <Menu.Item key="4">
-                            <Link to='/backstage/visreg' style={fontStyle}>访客信息登记</Link>
+                            <Link to='/backstage/visreg' style={fontStyle}>访客信息列表</Link>
                         </Menu.Item>
                         <Menu.Item key="5">
-                            <Link to='/backstage/repaire' style={fontStyle}>维修信息登记</Link>
+                            <Link to='/backstage/repaire' style={fontStyle}>维修信息列表</Link>
                         </Menu.Item>
                         <Menu.Item key="6">
-                            <Link to='/backstage/borrow' style={fontStyle}>物品借用登记</Link>
+                            <Link to='/backstage/borrow' style={fontStyle}>物品借用列表</Link>
                         </Menu.Item>
                         <Menu.Item key="7">
-                            <Link to='/backstage/discipline' style={fontStyle}>学生违纪登记</Link>
+                            <Link to='/backstage/discipline' style={fontStyle}>学生违纪列表</Link>
                         </Menu.Item>
                     </SubMenu>
                     <SubMenu title='系统设置'>
                         <Menu.Item key="10">
-                            <Link to='/addAdmin' style={fontStyle}>添加管理员</Link>
+                            <Link to='/backstage/addAdmin' style={fontStyle}>添加管理员</Link>
                         </Menu.Item>
-                        <Menu.Item key="11">
+                        {/* <Menu.Item key="11">
                             <Link to='/backstage/resetPas' style={fontStyle}>修改密码</Link>
-                        </Menu.Item>
+                        </Menu.Item> */}
                         <Menu.Item key="12">
                             <Link to='/backstage/addnews' style={fontStyle}>公告和新闻</Link>
                         </Menu.Item>
