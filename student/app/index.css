@@ -45,3 +45,9 @@ body{
     border-radius: 500px;
     width: 100%;
 }
+.cardWrap{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%
+}

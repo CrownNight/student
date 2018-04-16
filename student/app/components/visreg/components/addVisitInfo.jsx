@@ -11,7 +11,8 @@ const TextArea = Input.TextArea
     constructor() {
         super()
         this.state = {
-            show: false
+            show: false,
+            date:""
         }
     }
     showModal() {
@@ -21,8 +22,12 @@ const TextArea = Input.TextArea
         this.props.form.validateFields((err, value) => {
             if (err) return;
 
+            if(this.state.date==''){
+                message.error('日期不能为空')
+                return
+            }
             value.type='regis'
-            value.startTime=moment().lang(value.startTime).format('YYYY-MM-DD')
+            value.startTime=this.state.date;
             webApi.post('/addRegisterInfo', value).then(data => {
                 if (data.flag) {
                     message.info(data.returnValue);
@@ -39,7 +44,9 @@ const TextArea = Input.TextArea
     handleCancel() {
         this.setState({ show: false })
     }
-
+    dateChange(date,dateString){
+        this.setState({date:dateString})
+    }
     render() {
         const { getFieldDecorator, setFieldsValue } = this.props.form;
         const formItemLayout = {
@@ -82,9 +89,7 @@ const TextArea = Input.TextArea
                             </FormItem>
                             <FormItem label='来访时间' {...formItemLayout}>
                                 <Col>
-                                    {getFieldDecorator('startTime', {
-                                        rules: [{ required: true, }]
-                                    })(<DatePicker  placeholder='请选择日期' />)}
+                                <DatePicker  placeholder='请选择日期' onChange={this.dateChange.bind(this)}/>
                                 </Col>
                             </FormItem>
                             <FormItem label='来访身份证' {...formItemLayout}>

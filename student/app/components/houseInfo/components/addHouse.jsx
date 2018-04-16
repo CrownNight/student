@@ -22,18 +22,23 @@ class AddHouse extends React.Component {
         this.props.form.validateFields((err, value) => {
             if (err) return;
 
+            if(value.haspeople>value.bed){
+                message.error('已住人数不能大于床位数');
+                return
+            }
+
             webApi.post('/addHouse', value).then(data => {
                 if (data.flag) {
                     message.info(data.returnValue)
                     if (this.props.callBack) {
                         this.props.callBack(data.flag)
-                    }
+                    }                 
                 } else {
                     message.error(data.errorMessage)
                 }
             })
-        })
-        this.setState({ show: false })
+        })   
+        this.setState({ show: false })  
     }
 
     handleCancel() {
@@ -84,6 +89,20 @@ class AddHouse extends React.Component {
                                 <FormItem label='饮水机' {...formItemLayout}>
                                     {getFieldDecorator('dispenser', {
                                         rules: [{ required: true, message: '宿舍号不能为空' }]
+                                    })(<Input />)}
+                                </FormItem>
+                            </Col>
+                            {/* <Col>
+                                <FormItem label='空余' {...formItemLayout}>
+                                    {getFieldDecorator('empty', {
+                                        rules: [{ required: true }]
+                                    })(<Input />)}
+                                </FormItem>
+                            </Col> */}
+                            <Col>
+                                <FormItem label='已住人数' {...formItemLayout}>
+                                    {getFieldDecorator('haspeople', {
+                                        rules: [{ required: true }]
                                     })(<Input />)}
                                 </FormItem>
                             </Col>

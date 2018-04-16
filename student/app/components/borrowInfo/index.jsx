@@ -1,87 +1,89 @@
 import React from 'react';
-import { Card, message } from 'antd';
-import '../../index.css';
-import EditInfo from './components/editInfo';
-import AddBorrow from './components/addBorrow'
-import Examine from './components/examine'
-import { webApi, XTable } from '../../utils';
-import moment from 'moment'
-
+import ReactEcharts from 'echarts-for-react';
+import { Link } from 'react-router-dom';
+import { webApi } from '../../utils';
+import { Card, Row, Col, message, Icon } from 'antd';
+import PieEcharts from './components/pieCharts';
 
 export default class Index extends React.Component {
     constructor() {
-        super()
+        super();
         this.state = {
-            index: 1,
-            size: 5,
-            total: 0,
-            data: []
+            data: [],
+            date: []
         }
-    }
-    componentDidMount() {
-        this.getList(this.state.index, this.state.size)
-    }
-    getList(index, size) {
-        let arr = []
-        webApi.get('/getRegisterInfo?index=' + index + '&size=' + size + '&type=borrow').then(data => {
-            if (data.flag) {
-                data.returnValue.map(key => {
-                    arr.push({
-                        startTime: moment(key.startTime).format('YYYY-MM-DD'),
-                        endTime: key.endTime == '' ? '' : moment(key.endTime).format('YYYY-MM-DD'),
-                        studentName: key.studentName,
-                        class: key.class,
-                        des: key.des,
-                        borrowSth: key.borrowSth,
-                        status: key.status,
-                        id: key.id,
-                        key: key.key
-                    })
-                })
-                this.setState({
-                    data: arr,
-                    total: data.total
-                })
-            }
-        })  
-    }
-    pageChange(index, size) {
-        this.setState({ index, size })
-        this.getList(index, size)
     }
 
-    callBack(sta) {
-        if (sta) {
-            this.getList(this.state.index, this.state.size)
-        }
+    componentDidMount() {
+        webApi.get('/getDateForBorrow?type=borrow&status=未归还').then(data => {
+            if (data.flag) {
+                let arr = data.returnValue;
+                let newArr = [];
+                for (let i = 0; i < arr.length; i++) {
+                    if (newArr.indexOf(arr[i]) == -1) {
+                        newArr.push(arr[i])
+                    }
+                }
+                newArr.sort();
+                this.setState({ date: newArr });
+                webApi.post('/getCountForBorrow?status=未归还', newArr).then(item => {
+                    if (item.flag) {
+                        this.setState({ data: item.returnValue })
+                    } else {
+                        message.error('获取借用物品数量失败')
+                    }
+                })
+            } else {
+                message.error('获取借用物品日期失败')
+            }
+        })
     }
 
     render() {
-        const { index, size, data, total } = this.state
-        const columns = [
-            { title: '借用人', dataIndex: 'studentName', },
-            { title: '学院班级', dataIndex: 'class', },
-            { title: '借用物品', dataIndex: 'borrowSth', },
-            { title: '借用时间', dataIndex: 'startTime', },
-            { title: '归还时间', dataIndex: 'endTime', },
-            { title: '用途', dataIndex: 'des', },
-            { title: '借用状态', dataIndex: 'status', render: (text, record) => <Examine callBack={this.callBack.bind(this)} data={record} /> },
-            { title: '操作', dataIndex: 'n7', render: (text,record) => <EditInfo callBack={this.callBack.bind(this)} data={record} /> },
-        ]
+        const option = {
+            title: {
+                text: '物品借用走势曲线',
+                textStyle: {
+                    color: '#232545'
+                },
+                left: 'center'
+            },
+            tooltip: { trigger: 'axis' },
+            xAxis: {
+                type: 'category',
+                data: this.state.date
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                name: '物品借用日期和数量',
+                type: 'line',
+                data: this.state.data
+            }]
+        }
         return (
             <div>
-                <div className='pageTitle'><h1>物品借用信息</h1></div>
-                <div style={{ position: 'relative', bottom: 5, left: '95%' }}><AddBorrow callBack={this.callBack.bind(this)} /></div>
-                <Card hoverable='noHovering'>
-                    <XTable
-                        data={data}
-                        columns={columns}
-                        index={index}
-                        size={size}
-                        total={total}
-                        onChange={this.pageChange.bind(this)}
-                    />
-                </Card>
+                <Row gutter={16}>
+                    <Col md={24}>
+                        <Card style={{ height: '800px' }}>
+                            <div>
+                                <ReactEcharts
+                                    option={option}
+                                    style={{ height: 450, width: '100%' }}
+                                    className={'react_for_echarts'}
+                                />
+                            </div>
+                            <div>
+                                <PieEcharts />
+                                <div style={{ textAlign: 'center', }}>
+                                    <Link to={{ pathname: '/backstage/borrow/list', state: '已归还' }} style={{ fontSize: 16 }}>查看已归还列表<Icon type="caret-right" /></Link>
+                                    <Link to={{ pathname: '/backstage/borrow/list', state: '未归还' }} style={{ fontSize: 16, marginLeft: 10 }}>查看未归还列表<Icon type="caret-right" /></Link>
+                                </div>
+                            </div>
+                        </Card>
+                    </Col>
+                </Row>
             </div>
         )
     }

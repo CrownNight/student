@@ -18,18 +18,23 @@ class EditHouse extends React.Component {
         })
     }
     handleOk() {
-        this.props.form.validateFields((err,value)=>{
-            if(err) return;
+        this.props.form.validateFields((err, value) => {
+            if (err) return;
 
-            let searchCondition={...value};
-            searchCondition.id=this.props.data.id;
-            webApi.post('/updateHouse',searchCondition).then(data=>{
-                if(data.flag){
+            if (value.haspeople > value.bed) {
+                message.error('已住人数不能大于床位数');
+                return
+            }
+
+            let searchCondition = { ...value };
+            searchCondition.id = this.props.data.id;
+            webApi.post('/updateHouse', searchCondition).then(data => {
+                if (data.flag) {
                     message.info(data.returnValue)
-                    if(this.props.callBack){
+                    if (this.props.callBack) {
                         this.props.callBack(data.flag)
-                    }
-                }else{
+                    }                 
+                } else {
                     message.error('修改失败，请重试。。。')
                 }
             })
@@ -43,15 +48,15 @@ class EditHouse extends React.Component {
     }
     //删除时点击了确定
     handleConfirm() {
-        let searchCondition={};
-        searchCondition.id=this.props.data.id
-        webApi.post('/deleteHouse',searchCondition).then(data=>{
-            if(data.flag){
+        let searchCondition = {};
+        searchCondition.id = this.props.data.id
+        webApi.post('/deleteHouse', searchCondition).then(data => {
+            if (data.flag) {
                 message.info(data.returnValue)
-                if(this.props.callBack){
+                if (this.props.callBack) {
                     this.props.callBack(data.flag)
                 }
-            }else{
+            } else {
                 message.error('删除失败，请重试。。。')
             }
         })
@@ -110,6 +115,20 @@ class EditHouse extends React.Component {
                                 <FormItem label='饮水机' {...formItemLayout}>
                                     {getFieldDecorator('dispenser', {
                                         rules: [{ required: true, message: '饮水机不能为空' }]
+                                    })(<Input />)}
+                                </FormItem>
+                            </Col>
+                            {/* <Col>
+                                <FormItem label='空余' {...formItemLayout}>
+                                    {getFieldDecorator('empty', {
+                                        rules: [{ required: true }]
+                                    })(<Input />)}
+                                </FormItem>
+                            </Col> */}
+                            <Col>
+                                <FormItem label='已住人数' {...formItemLayout}>
+                                    {getFieldDecorator('haspeople', {
+                                        rules: [{ required: true }]
                                     })(<Input />)}
                                 </FormItem>
                             </Col>

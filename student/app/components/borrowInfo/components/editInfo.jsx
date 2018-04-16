@@ -9,7 +9,7 @@ const TextArea = Input.TextArea;
 class EditInfo extends React.Component {
     constructor() {
         super();
-        this.state = { show: false }
+        this.state = { show: false,date:'' }
     }
     showModal() {
         this.props.data.startTime=moment(this.props.data.startTime,'YYYY-MM-DD')
@@ -20,7 +20,13 @@ class EditInfo extends React.Component {
         this.props.form.validateFields((err, value) => {
             if (err) return;
 
+            if(this.state.date==''){
+                message.error('日期不能为空');
+                return
+            }
             value.id = this.props.data.id;
+            value.status=this.props.data.status
+            value.startTime=this.state.date
             webApi.post('/updateRegisterInfo', value).then(data => {
                 if (data.flag) {
                     message.info(data.returnValue);
@@ -51,6 +57,9 @@ class EditInfo extends React.Component {
                 message.error(data.returnValue)
             }
         })
+    }
+    dateChange(date,dateString){
+        this.setState({date:dateString})
     }
     render() {
         const { getFieldDecorator, setFieldsValue } = this.props.form;
@@ -97,9 +106,7 @@ class EditInfo extends React.Component {
                             </Col>
                             <Col>
                                 <FormItem label='借用时间' {...formItemLayout}>
-                                {getFieldDecorator('startTime', {
-                                        rules: [{ required: true }]
-                                    })(<DatePicker placeholder='请选择借用时间'/>)}
+                                <DatePicker placeholder='请选择借用时间' onChange={this.dateChange.bind(this)}/>
                                 </FormItem>
                             </Col>
                             {/* <Col>

@@ -1,33 +1,37 @@
 import React from 'react';
-import { Button, Form, Input, message, Row, Col, Modal ,DatePicker} from 'antd';
+import { Button, Form, Input, message, Row, Col, Modal, DatePicker } from 'antd';
 import moment from 'moment'
-import {webApi} from '../../../utils';
+import { webApi } from '../../../utils';
 
 const FormItem = Form.Item;
 const TextArea = Input.TextArea;
 
- class AddRepaire extends React.Component {
+class AddRepaire extends React.Component {
     constructor() {
         super();
-        this.state = { show: false }
+        this.state = { show: false, date1: '' }
     }
     showModal() {
         this.setState({ show: true })
     }
     handleOk() {
-        this.props.form.validateFields((err,value)=>{
-            if(err) return;
+        this.props.form.validateFields((err, value) => {
+            if (err) return;
 
-            value.status='未解决'
-            value.type='repair'
-            value.startTime=moment(value.startTime,'YYYY-MM-DD')
-            webApi.post('/addRegisterInfo',value).then(data=>{
-                if(data.flag){
+            if (this.state.date1 == '') {
+                message.error('日期不能为空');
+                return
+            }
+            value.status = '未解决'
+            value.type = 'repair'
+            value.startTime = this.state.date1
+            webApi.post('/addRegisterInfo', value).then(data => {
+                if (data.flag) {
                     message.info(data.returnValue)
-                    if(this.props.callBack){
+                    if (this.props.callBack) {
                         this.props.callBack(data.flag)
                     }
-                }else{
+                } else {
                     message.error(data.returnValue)
                 }
             })
@@ -37,7 +41,9 @@ const TextArea = Input.TextArea;
     handleCancel() {
         this.setState({ show: false })
     }
-
+    dateChange(date, dateString) {
+        this.setState({ date1: dateString })
+    }
     render() {
         const { getFieldDecorator, setFieldsValue } = this.props.form;
         const formItemLayout = {
@@ -48,7 +54,7 @@ const TextArea = Input.TextArea;
             <div>
                 <Button type='primary' onClick={this.showModal.bind(this)}>添加</Button>
                 <Modal title='添加报修信息' visible={this.state.show} onOk={this.handleOk.bind(this)} onCancel={this.handleCancel.bind(this)} okText='确认' cancelText='取消'>
-                <Form>
+                    <Form>
                         <Row gutter='16'>
                             <Col>
                                 <FormItem label='报修人' {...formItemLayout}>
@@ -59,9 +65,7 @@ const TextArea = Input.TextArea;
                             </Col>
                             <Col>
                                 <FormItem label='报修时间' {...formItemLayout}>
-                                    {getFieldDecorator('startTime', {
-                                        rules: [{ required: true, message: '报修时间不能为空' }]
-                                    })(<DatePicker placeholder='请选择日期' />)}
+                                    <DatePicker placeholder='请选择日期' onChange={this.dateChange.bind(this)} />
                                 </FormItem>
                             </Col>
                             {/* <Col>
@@ -103,5 +107,5 @@ const TextArea = Input.TextArea;
         )
     }
 }
-AddRepaire=Form.create()(AddRepaire);
+AddRepaire = Form.create()(AddRepaire);
 export default AddRepaire

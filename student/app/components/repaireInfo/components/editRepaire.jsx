@@ -9,7 +9,7 @@ const RadioGroup = Radio.Group;
 class EditRepaire extends React.Component {
     constructor() {
         super()
-        this.state = { show: false }
+        this.state = { show: false,date:'' }
     }
 
     showModal() {
@@ -24,8 +24,13 @@ class EditRepaire extends React.Component {
         this.props.form.validateFields((err, value) => {
             if (err) return;
 
+            if(this.state.date==''){
+                message.error('日期不能为空');
+                return
+            }
             value.id = this.props.data.id;
             value.status = '未解决'
+            value.startTime=this.state.date
             webApi.post('/updateRegisterInfo', value).then(data => {
                 if (data.flag) {
                     message.info(data.returnValue);
@@ -57,7 +62,9 @@ class EditRepaire extends React.Component {
             }
         })
     }
-
+    dateChange(date,dateString){
+        this.setState({date:dateString})
+    }
     render() {
         const { getFieldDecorator, setFieldsValue } = this.props.form;
         const formItemLayout = {
@@ -82,9 +89,7 @@ class EditRepaire extends React.Component {
                             </Col>
                             <Col>
                                 <FormItem label='报修时间' {...formItemLayout}>
-                                    {getFieldDecorator('startTime', {
-                                        rules: [{ required: true, message: '报修时间不能为空' }]
-                                    })(<DatePicker placeholder='请选择日期' />)}
+                                <DatePicker placeholder='请选择日期' onChange={this.dateChange.bind(this)}/>
                                 </FormItem>
                             </Col>
                             {/* <Col>

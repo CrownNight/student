@@ -29,11 +29,12 @@ class EditDis extends React.Component {
 
             if (this.props.data) {
                 value.id = this.props.data.id
+                value.startTime = moment(value.startTime).format('YYYY-MM-DD')
                 let url = '/updateRegisterInfo'
                 this.updateInfo(url, value)
             } else {
                 value.type = 'disc';
-                value.startTime = moment(value.startTime, 'YYYY-MM-DD')
+                value.startTime = moment(value.startTime).format('YYYY-MM-DD')
                 let url = '/addRegisterInfo'
                 this.updateInfo(url, value)
             }

@@ -17,14 +17,7 @@ export default class Index extends React.Component {
         webApi.get('/getCountForStatus').then(data => {
             if (data.flag) {
                 data.returnValue.map(key => {
-                    if (key.number == 1) {
-                        text = '已通过'
-                    } else if (key.number == 2) {
-                        text = '未通过'
-                    } else {
-                        text = '待审核'
-                    }
-                    item.push({ value: key.value, name: text })
+                    item.unshift( key.value )
                 })
                 this.setState({
                     data: item
@@ -38,33 +31,23 @@ export default class Index extends React.Component {
     render() {
         const options = {
             title: {
-                text: '退宿或外宿信息',
+                text: '退宿或外宿状态信息',
+                left: 'center',
                 textStyle: {
                     color: '#235894'
                 }
-            },
+            },            
             tooltip: {},
+            xAxis:{
+                type: 'category',                
+                data:['待审核','未通过','已通过']
+            },
+            yAxis:{
+               type:'value'
+            },
             series: [{
                 name: '人数',
-                type: 'pie',
-                selectedMode: 'single',
-                selectedOffset: 30,
-                clockwise: true,
-                label: {
-                    normal: {
-                        textStyle: {
-                            fontSize: 18,
-                            color: '#235894'
-                        }
-                    }
-                },
-                labelLine: {
-                    normal: {
-                        lineStyle: {
-                            color: '#235894'
-                        }
-                    }
-                },
+                type: 'bar',                            
                 data: this.state.data,
             }]
         }

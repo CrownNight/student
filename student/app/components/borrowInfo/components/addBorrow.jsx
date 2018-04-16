@@ -1,43 +1,51 @@
 import React from 'react';
-import { Card, Form, Input, Row, Col, message, Modal, Button,DatePicker } from 'antd';
-import {webApi} from '../../../utils';
+import { Card, Form, Input, Row, Col, message, Modal, Button, DatePicker } from 'antd';
+import { webApi } from '../../../utils';
 import moment from 'moment'
 
 const FormItem = Form.Item;
 const TextArea = Input.TextArea;
 
- class AddBorrow extends React.Component {
+class AddBorrow extends React.Component {
     constructor() {
         super();
-        this.state = { show: false }
+        this.state = { show: false, date: '' }
     }
     showModal() {
         this.setState({ show: true })
     }
     handleOk() {
-        this.props.form.validateFields((err,value)=>{
-            if(err) return;
+        this.props.form.validateFields((err, value) => {
+            if (err) return;
 
-            value.type='borrow';
-            value.startTime=moment(value.startTime,'YYYY-MM-DD')
-            webApi.post('/addRegisterInfo',value).then(data=>{
-                if(data.flag){
+            if (this.state.date == '') {
+                message.error('日期不能为空');
+                return
+            }
+            value.type = 'borrow';
+            value.status = '未归还'
+            value.startTime = this.state.date
+            webApi.post('/addRegisterInfo', value).then(data => {
+                if (data.flag) {
                     message.info(data.returnValue);
-                    if(this.props.callBack){
+                    if (this.props.callBack) {
                         this.props.callBack(data.flag)
                     }
                     this.setState({ show: false })
-                }else{
+                } else {
                     message.error(data.returnValue)
                 }
             })
         })
-        
+
     }
     handleCancel() {
         this.setState({ show: false })
     }
 
+    dateChange(date, dateString) {
+        this.setState({ date: dateString })
+    }
     render() {
         const { getFieldDecorator, setFieldsValue } = this.props.form;
         const formItemLayout = {
@@ -66,7 +74,7 @@ const TextArea = Input.TextArea;
                             </Col>
                             <Col>
                                 <FormItem label='专业班级' {...formItemLayout}>
-                                {getFieldDecorator('class', {
+                                    {getFieldDecorator('class', {
                                         rules: [{ required: true, message: '专业班级不能为空' }]
                                     })(<Input />)}
                                 </FormItem>
@@ -80,15 +88,13 @@ const TextArea = Input.TextArea;
                             </Col>
                             <Col>
                                 <FormItem label='借用时间' {...formItemLayout}>
-                                {getFieldDecorator('startTime', {
-                                        rules: [{ required: true, message: '借用时间不能为空' }]
-                                    })(<DatePicker placeholder='请选择借用时间' />)}
+                                    <DatePicker placeholder='请选择借用时间' onChange={this.dateChange.bind(this)} />
                                 </FormItem>
                             </Col>
-                            
+
                             <Col>
                                 <FormItem label='用途' {...formItemLayout}>
-                                {getFieldDecorator('des', {
+                                    {getFieldDecorator('des', {
                                         rules: [{ required: true, message: '用途不能为空' }]
                                     })(<TextArea rows='3' />)}
                                 </FormItem>
@@ -100,5 +106,5 @@ const TextArea = Input.TextArea;
         )
     }
 }
-AddBorrow=Form.create()(AddBorrow)
+AddBorrow = Form.create()(AddBorrow)
 export default AddBorrow

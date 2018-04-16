@@ -10,7 +10,8 @@ class EditVisiterInfo extends React.Component {
     constructor() {
         super()
         this.state = {
-            isShow: false
+            isShow: false,
+            date:''
         }
     }
 
@@ -24,6 +25,11 @@ class EditVisiterInfo extends React.Component {
         this.props.form.validateFields((err, value) => {
             if (err) return;
 
+            if(this.state.state==''){
+                message.error('日期不能为空');
+                return
+            }
+            value.startTime=this.state.date
             value.id = this.props.data.id;
             webApi.post('/updateRegisterInfo', value).then(data => {
                 if (data.flag) {
@@ -60,6 +66,9 @@ class EditVisiterInfo extends React.Component {
         this.setState({
             isShow: false
         })
+    }
+    dateChange(date,dateString){
+        this.setState({date:dateString})
     }
     render() {
         const { getFieldDecorator, setFieldsValue } = this.props.form;
@@ -106,9 +115,7 @@ class EditVisiterInfo extends React.Component {
                             </FormItem>
                             <FormItem label='来访时间' {...formItemLayout}>
                                 <Col>
-                                    {getFieldDecorator('startTime', {
-                                        rules: [{ required: true}]
-                                    })(<DatePicker placeholder='请选择日期' />)}
+                                <DatePicker placeholder='请选择日期' onChange={this.dateChange.bind(this)} />
                                 </Col>
                             </FormItem>
                             <FormItem label='身份证' {...formItemLayout}>
