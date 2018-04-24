@@ -2,20 +2,27 @@ import React from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { Link } from 'react-router-dom';
 import { webApi } from '../../utils';
-import { Card, Row, Col, message, Icon } from 'antd';
+import { Card, Row, Col, message, Icon,Radio } from 'antd';
 import PieEcharts from './components/pieCharts';
+
+const RadioGroup=Radio.Group;
+const RadioButton = Radio.Button;
 
 export default class Index extends React.Component {
     constructor() {
         super();
         this.state = {
             data: [],
-            date: []
+            date: [],
+            type:'day'
         }
     }
 
     componentDidMount() {
-        webApi.get('/getDateForBorrow?type=borrow&status=未归还').then(data => {
+        this.getList(this.state.type)
+    }
+    getList(type){
+        webApi.get('/getDateForBorrow?type=borrow&status=未归还&datetype='+type).then(data => {
             if (data.flag) {
                 let arr = data.returnValue;
                 let newArr = [];
@@ -26,7 +33,7 @@ export default class Index extends React.Component {
                 }
                 newArr.sort();
                 this.setState({ date: newArr });
-                webApi.post('/getCountForBorrow?status=未归还', newArr).then(item => {
+                webApi.post('/getCountForBorrow?status=未归还&datetype='+type, newArr).then(item => {
                     if (item.flag) {
                         this.setState({ data: item.returnValue })
                     } else {
@@ -37,6 +44,11 @@ export default class Index extends React.Component {
                 message.error('获取借用物品日期失败')
             }
         })
+    }
+
+    handleChange(e){
+        this.setState({type:e.target.value});
+        this.getList(e.target.value)
     }
 
     render() {
@@ -67,6 +79,11 @@ export default class Index extends React.Component {
                 <Row gutter={16}>
                     <Col md={24}>
                         <Card style={{ height: '800px' }}>
+                        <RadioGroup defaultValue='day' size='large' onChange={this.handleChange.bind(this)} value={this.state.type}>
+                                <RadioButton value='day'>按天</RadioButton>
+                                <RadioButton value='month'>按月</RadioButton>
+                                <RadioButton value='year'>按年</RadioButton>
+                            </RadioGroup>
                             <div>
                                 <ReactEcharts
                                     option={option}

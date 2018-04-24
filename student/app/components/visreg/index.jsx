@@ -1,21 +1,28 @@
 import React from 'react';
 import ReactEcharts from 'echarts-for-react';
-import { Card, Row, Col, message,Icon } from 'antd';
+import { Card, Row, Col, message,Icon,Radio } from 'antd';
 import { Link } from 'react-router-dom';
 import { webApi } from '../../utils';
+
+const RadioGroup=Radio.Group;
+const RadioButton = Radio.Button;
 
 export default class Index extends React.Component {
     constructor() {
         super();
         this.state = {
             data: [],
-            date: []
+            date: [],
+            dateType:'day'
         }
     }
 
     componentDidMount() {
+      this.getList(this.state.dateType)
+    }
+    getList(type){
         let newArr = []
-        webApi.get('/getDateForVister?type=regis').then(data => {
+        webApi.get('/getDateForVister?type=regis&datetype='+type).then(data => {
             if (data.flag) {
                 for (var i = 0; i < data.returnValue.length; i++) {
                     if (newArr.indexOf(data.returnValue[i]) == -1) {
@@ -31,14 +38,27 @@ export default class Index extends React.Component {
         })
     }
     getCount(ar) {
-        webApi.post('/getCountForVister?type=regis', ar).then(item => {
+        webApi.post('/getCountForVister?type=regis&datetype='+this.state.dateType, ar).then(item => {
             if (item.flag) {
                 this.setState({ data: item.returnValue })
             }
         })
     }
 
+    handleChange(e){
+        this.setState({dateType:e.target.value})
+        this.getList(e.target.value)
+    }
     render() {
+        const {dateType} = this.state;
+        let name=''
+        if(dateType=='day'){
+            name='日期'
+        }else if(dateType=='month'){
+            name='月份'
+        }else{
+            name='年'
+        }
         const option = {
             title: {
                 left: 'center',
@@ -49,6 +69,7 @@ export default class Index extends React.Component {
             },
             tooltip: { trigger: 'axis', },
             xAxis: {
+                name:name,
                 type: 'category',
                 data: this.state.date
             },
@@ -57,6 +78,7 @@ export default class Index extends React.Component {
             },
             series: [
                 {
+                    name:'数量',
                     data: this.state.data,
                     type: 'line',
                 }
@@ -67,6 +89,11 @@ export default class Index extends React.Component {
                 <Row gutter={16}>
                     <Col md={24}>
                         <Card>
+                            <RadioGroup defaultValue='day' size='large' onChange={this.handleChange.bind(this)} value={this.state.dateType}>
+                                <RadioButton value='day'>按天</RadioButton>
+                                <RadioButton value='month'>按月</RadioButton>
+                                <RadioButton value='year'>按年</RadioButton>
+                            </RadioGroup>
                             <ReactEcharts
                                 option={option}
                                 style={{ height: 500, width: '100%' }}

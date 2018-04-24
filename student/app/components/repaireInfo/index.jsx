@@ -1,15 +1,18 @@
 import React from 'react';
 import ReactEcharts from 'echarts-for-react';
-import { Card, Row, Col, message, Icon } from 'antd';
+import { Card, Row, Col, message, Icon ,Radio} from 'antd';
 import { Link } from 'react-router-dom';
 import { webApi } from '../../utils';
 import LineEcharts from './components/lineEcharts';
 
+const RadioGroup=Radio.Group;
+const RadioButton = Radio.Button;
 export default class Index extends React.Component {
     constructor() {
         super();
         this.state = {
-            data: []
+            data: [],
+            type:'day'
         }
     }
 
@@ -22,7 +25,9 @@ export default class Index extends React.Component {
             }
         })
     }
-
+    handleChange(e){
+        this.setState({type:e.target.value})
+    }
     render() {
         const option = {
             backgroundColor: {
@@ -66,7 +71,12 @@ export default class Index extends React.Component {
                     <Col md={24}>
                         <div>
                             <Card>
-                                <LineEcharts />
+                            <RadioGroup defaultValue='day' size='large' onChange={this.handleChange.bind(this)} value={this.state.type}>
+                                <RadioButton value='day'>按天</RadioButton>
+                                <RadioButton value='month'>按月</RadioButton>
+                                <RadioButton value='year'>按年</RadioButton>
+                            </RadioGroup>
+                                <LineEcharts type={this.state.type}/>
                             </Card>
                         </div>
                         <div>

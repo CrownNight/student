@@ -12,9 +12,15 @@ export default class LineEcharts extends React.Component {
             date: []
         }
     }
+    componentWillReceiveProps(nextProps,nextState){
+        this.getList(nextProps.type)
+    }
 
     componentDidMount() {
-        webApi.get('/getDateForRepaire?type=repair').then(data => {
+       this.getList(this.props.type)
+    }
+    getList(type){
+        webApi.get('/getDateForRepaire?type=repair&datetype='+type).then(data => {
             if (data.flag) {
                 let newArr = data.returnValue;
                 let arr = []
@@ -25,15 +31,16 @@ export default class LineEcharts extends React.Component {
                 }              
                 arr.sort();
                 this.setState({ date: arr });
-              this.getData(arr)
+              this.getData(arr,type)
             } else {
                 message.error('获取日期列表失败')
             }
         })
     }
+    
 
-    getData(ar){
-        webApi.post('/getCountForRepaire?type=repair', ar).then(item => {
+    getData(ar,type){
+        webApi.post('/getCountForRepaire?type=repair&datetype='+type, ar).then(item => {
             if (item.flag) {
                 this.setState({ data: item.returnValue })
             } else {
@@ -43,6 +50,15 @@ export default class LineEcharts extends React.Component {
     }
     
     render() {
+        const {type}=this.props;
+        let name=''
+        if(type=='day'){
+            name='日期'
+        }else if(type=='month'){
+            name='月'
+        }else{
+            name='年'
+        }
         const option = {
             title: {
                 text: '报修走势曲线',
@@ -53,6 +69,7 @@ export default class LineEcharts extends React.Component {
             },
             tooltip: {trigger: 'axis'},
             xAxis: {
+                name:name,
                 type: 'category',
                 data: this.state.date
             },

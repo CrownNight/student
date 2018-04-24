@@ -9,13 +9,19 @@ const RadioGroup = Radio.Group;
 class EditRepaire extends React.Component {
     constructor() {
         super()
-        this.state = { show: false,date:'' }
+        this.state = { show: false, date: '' }
     }
 
     showModal() {
         this.props.data.startTime = moment(this.props.data.startTime, 'YYYY-MM-DD')
-        this.props.data.endTime = this.props.data.endTime == '' ? '' : moment(this.props.data.endTime, 'YYYY-MM-DD')
-        this.props.form.setFieldsValue(this.props.data)
+        //this.props.data.endTime = this.props.data.endTime == '' ? '' : moment(this.props.data.endTime, 'YYYY-MM-DD')
+        let result={
+            studentName:this.props.data.studentName,
+            des:this.props.data.des,
+            repaireHouse:this.props.data.repaireHouse,
+            status:this.props.data.status
+        }
+        this.props.form.setFieldsValue(result)
         this.setState({
             show: true
         })
@@ -24,13 +30,13 @@ class EditRepaire extends React.Component {
         this.props.form.validateFields((err, value) => {
             if (err) return;
 
-            if(this.state.date==''){
+            if (this.state.date == '') {
                 message.error('日期不能为空');
                 return
             }
             value.id = this.props.data.id;
             value.status = '未解决'
-            value.startTime=this.state.date
+            value.startTime = this.state.date
             webApi.post('/updateRegisterInfo', value).then(data => {
                 if (data.flag) {
                     message.info(data.returnValue);
@@ -62,8 +68,8 @@ class EditRepaire extends React.Component {
             }
         })
     }
-    dateChange(date,dateString){
-        this.setState({date:dateString})
+    dateChange(date, dateString) {
+        this.setState({ date: dateString })
     }
     render() {
         const { getFieldDecorator, setFieldsValue } = this.props.form;
@@ -89,7 +95,7 @@ class EditRepaire extends React.Component {
                             </Col>
                             <Col>
                                 <FormItem label='报修时间' {...formItemLayout}>
-                                <DatePicker placeholder='请选择日期' onChange={this.dateChange.bind(this)}/>
+                                    <DatePicker placeholder='请选择日期' onChange={this.dateChange.bind(this)} />
                                 </FormItem>
                             </Col>
                             {/* <Col>
@@ -113,7 +119,7 @@ class EditRepaire extends React.Component {
                                     })(<Input.TextArea rows='3' />)}
                                 </FormItem>
                             </Col>
-                            {/* <Col>
+                            <Col>
                                 <FormItem label='报修状态' {...formItemLayout}>
                                     {getFieldDecorator('status', {
                                         rules: [{ required: true }]
@@ -123,7 +129,7 @@ class EditRepaire extends React.Component {
                                     </RadioGroup>)}
 
                                 </FormItem>
-                            </Col> */}
+                            </Col>
                         </Row>
                     </Form>
                 </Modal>

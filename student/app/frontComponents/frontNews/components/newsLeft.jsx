@@ -10,7 +10,7 @@ export default class NewsListLeft extends React.Component{
         this.state={
             data:[],
             index:1,
-            size:5,
+            size:2,
             total:1
         }
     }

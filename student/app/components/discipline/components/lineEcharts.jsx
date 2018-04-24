@@ -11,9 +11,15 @@ export default class LineEcharts extends React.Component {
             data: [],
         }
     }
+    componentWillReceiveProps(nextProps,nextState){
+        this.getList(nextProps.type)
+    }
     componentDidMount() {
+     this.getList(this.props.type)
+    }
+    getList(type){
         let newArr = [];
-        webApi.get('/getDateOfDisc?type=disc').then(data => {
+        webApi.get('/getDateOfDisc?type=disc&datetype='+type).then(data => {
             if (data.flag) {
                 let arr = data.returnValue;
                 for (let i = 0; i < arr.length; i++) {
@@ -23,7 +29,7 @@ export default class LineEcharts extends React.Component {
                 };
                 newArr.sort();
                 this.setState({ date: newArr });
-                webApi.post('/getCountOfDisc?type=disc', newArr).then(item => {
+                webApi.post('/getCountOfDisc?type=disc&datetype='+type, newArr).then(item => {
                     if (item.flag) {
                         this.setState({ data: item.returnValue })
                     }

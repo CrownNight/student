@@ -499,12 +499,14 @@ app.get('/getRegisterInfo', function (req, res) {
 app.post('/updateRegisterInfo', function (req, res) {
     let result = {};
     let item = req.body;
+    let month = item.startTime.substr(6,1);
+    let year = item.startTime.substr(0,4)
     let sql = `update register set name='${item.studentName ? item.studentName : ''}',visName='${item.visName ? item.visName : ''}',
     startTime='${item.startTime ? item.startTime : ''}',endTime='${item.endTime ? item.endTime : ''}',
     relationship='${item.relationship ? item.relationship : ''}',idCard='${item.idCard ? item.idCard : ''}',
     Des='${item.des ? item.des : ''}',status='${item.status ? item.status : ''}',repaireHouse='${item.repaireHouse ? item.repaireHouse : ''}',
-    class='${item.class ? item.class : ''}',borrowSth='${item.borrowSth ? item.borrowSth : ''}',discipline='${item.discipline ? item.discipline : ''}' 
-    where id=${item.id}`;
+    class='${item.class ? item.class : ''}',borrowSth='${item.borrowSth ? item.borrowSth : ''}',discipline='${item.discipline ? item.discipline : ''}',
+    month='${month}',year='${year}' where id=${item.id}`;
 
     db.query(sql, function (err, rows) {
         result.flag = err == null ? true : false;
@@ -525,35 +527,18 @@ app.post('/deleteRegisterInfo', function (req, res) {
 app.post('/addRegisterInfo', function (req, res) {
     let result = {};
     let item = req.body;
-    let sql = `insert into register (name,visName,startTime,endTime,relationship,idCard,Des,status,repaireHouse,class,borrowSth,discipline,type) values 
+    let month = item.startTime.substr(6,1)
+    let year = item.startTime.substr(0,4) 
+    let sql = `insert into register (name,visName,startTime,endTime,relationship,idCard,Des,status,repaireHouse,class,borrowSth,discipline,type,month,year) values 
     ('${item.studentName ? item.studentName : ''}','${item.visName ? item.visName : ''}','${item.startTime ? item.startTime : ''}','${item.endTime ? item.endTime : ''}',
     '${item.relationship ? item.relationship : ''}','${item.idCard ? item.idCard : ''}','${item.des ? item.des : ''}','${item.status ? item.status : ''}',
     '${item.repaireHouse ? item.repaireHouse : ''}','${item.class ? item.class : ''}','${item.borrowSth ? item.borrowSth : ''}','${item.discipline ? item.discipline : ''}',
-    '${item.type}')`;
+    '${item.type}','${month}','${year}')`;
     db.query(sql, function (err, rows) {
-        console.log(err)
         result.flag = err == null ? true : false;
         result.returnValue = err == null ? '添加成功' : '添加失败，请重试。。。'
         res.send(result)
     })
-    // db.query(`select type,startTime,name,visName from register`, function (e, row) {
-    //     let resu = ''
-    //     if (e != null) {
-    //         row.map(key => {
-    //             if (key.startTime == item.startTime && key.type == item.type && key.name == item.studentName && key.visName == item.visName) {
-    //                 resu = 1
-    //             };
-    //         })
-    //         console.log(resu)
-    //         if (resu == 1) {
-    //             result.flag = true;
-    //             result.returnValue = '同一天不能添加相同的来访信息';
-    //             res.send(result)
-    //         } else {
-
-    //         }
-    //     }
-    // })
 })
 
 app.post('/examineRegisterInfo', function (req, res) {
@@ -572,12 +557,20 @@ app.get('/getDateForVister', function (req, res) {
     let item = req.query
     let result = {};
     let row = []
-    let sql = `select startTime from register where type='${item.type}'`;
+    let sql=''
+    if(item.datetype=='day'){
+        sql = `select startTime from register where type='${item.type}'`;
+    }else if(item.datetype=='month'){
+        sql=`select month from register where type='${item.type}'`
+    }else{
+        sql=`select year from register where type='${item.type}'`
+    }
+
     db.query(sql, function (err, rows) {
         if (err != null) return;
 
         rows.map(key => {
-            row.push(key.startTime)
+            row.push(key.startTime||key.month||key.year)
         })
         setTimeout(() => {
             result.flag = true
@@ -591,9 +584,18 @@ app.post('/getCountForVister', function (req, res) {
     let arr = [];
     let item = req.body;
     let ty = req.query
+    let type=''
+    if(ty.datetype=='day'){
+        type='startTime'
+    }else if(ty.datetype=='month'){
+        type='month'
+    }else{
+        type='year'
+    }
+    
     item.map(key => {
-        db.query(`select count(*) count from register where startTime='${key}' and type='${ty.type}'`, function (err, rows) {
-
+        let sql=`select count(*) count from register where ${type}='${key}' and type='${ty.type}'`
+        db.query(sql, function (err, rows) {
             if (err != null) return;
 
             arr.push(rows[0].count)
@@ -664,6 +666,63 @@ app.get('/getRepaireStatus', function (req, res) {
         result.returnValue = newArr
         res.send(result)
     }, 300)
+})
+
+
+/**
+ * 获取报修信息的日期和日期对应的报修数量
+ */
+app.get('/getDateForRepaire', function (req, res) {
+    let item = req.query;
+    let result = {};
+    let sql=''
+    if(item.datetype=='day'){
+       sql = `select startTime from register where type='${item.type}'`;
+    }else if(item.datetype=='month'){
+        sql = `select month from register where type='${item.type}'`;
+    }else{
+        sql = `select year from register where type='${item.type}'`;        
+    }
+    db.query(sql, function (err, rows) {
+        if (err != null) return;
+
+        let arr = [];
+        rows.map(key => {
+            arr.push(key.startTime||key.month||key.year);
+        })
+        setTimeout(() => {
+            result.flag = true;
+            result.returnValue = arr;
+            res.send(result)
+        }, 300)
+    })
+})
+app.post('/getCountForRepaire', function (req, res) {
+    let item = req.body;
+    let date = req.query;
+    let result = {};
+    let newArr = [];
+    let dateType=''
+    if(date.datetype=='day'){
+        dateType='startTime'
+    }else if(date.datetype=='month'){
+        dateType='month'
+    }else{
+        dateType='year'
+    }
+    item.map(key => {
+        let sql=`select count(*) count from register where ${dateType}='${key}' and type='${date.type}' and status='未解决'`
+        db.query(sql, function (err, rows) {
+            if (err != null) return;
+
+            newArr.push(rows[0].count)
+        })
+    })
+    setTimeout(() => {
+        result.flag = true;
+        result.returnValue = newArr;
+        res.send(result)
+    }, 400)
 })
 /*
 个人信息
@@ -741,57 +800,25 @@ app.post('/updatePassword', function (req, res) {
 
 
 /**
- * 获取报修信息的日期和日期对应的报修数量
- */
-app.get('/getDateForRepaire', function (req, res) {
-    let item = req.query;
-    let result = {};
-    let sql = `select startTime from register where  status='未解决'`;
-    db.query(sql, function (err, rows) {
-        if (err != null) return;
-
-        let arr = [];
-        rows.map(key => {
-            arr.push(key.startTime);
-        })
-        setTimeout(() => {
-            result.flag = true;
-            result.returnValue = arr;
-            res.send(result)
-        }, 300)
-    })
-})
-app.post('/getCountForRepaire', function (req, res) {
-    let item = req.body;
-    let type = req.query.type;
-    let result = {};
-    let newArr = [];
-    item.map(key => {
-        db.query(`select count(*) count from register where startTime='${key}' and type='${type}' and status='未解决'`, function (err, rows) {
-            if (err != null) return;
-
-            newArr.push(rows[0].count)
-        })
-    })
-    setTimeout(() => {
-        result.flag = true;
-        result.returnValue = newArr;
-        res.send(result)
-    }, 400)
-})
-/**
  * 获取物品借用的日期和数量
  */
 app.get('/getDateForBorrow', function (req, res) {
     let item = req.query;
     let result = {};
     let date = [];
-    let sql = `select startTime from register where type='${item.type}' and status='${item.status}'`;
+    let sql = '';
+    if(item.datetype=='day'){
+        sql=`select startTime from register where type='${item.type}' and status='${item.status}'`
+    }else if(item.datetype=='month'){
+        sql=`select month from register where type='${item.type}' and status='${item.status}'`        
+    }else{
+        sql=`select year from register where type='${item.type}' and status='${item.status}'`        
+    }
     db.query(sql, function (err, rows) {
         if (err != null) return;
 
         rows.map(key => {
-            date.push(key.startTime)
+            date.push(key.startTime||key.month||key.year)
         })
         setTimeout(() => {
             result.flag = true;
@@ -806,8 +833,16 @@ app.post('/getCountForBorrow', function (req, res) {
     let item = req.query;
     let result = {};
     let count = [];
+    let name=''
+    if(item.datetype=='day'){
+        name='startTime'
+    }else if(item.datetype=='month'){
+        name='month'
+    }else{
+        name='year'
+    }
     date.map(key => {
-        db.query(`select count(*) data from register where status='${item.status}' and startTime='${key}'`, function (err, rows) {
+        db.query(`select count(*) data from register where status='${item.status}' and ${name}='${key}'`, function (err, rows) {
             if (err != null) return;
 
             count.push(rows[0].data)
@@ -860,14 +895,23 @@ app.get('/getDataOfDisc', function (req, res) {
     }, 300)
 })
 app.get('/getDateOfDisc', function (req, res) {
-    let item = req.query.type;
+    let item = req.query;
     let result = {};
     let dateArr = [];
-    db.query(`select startTime from register where type='${item}'`, function (err, rows) {
+    let sql='';
+    if(item.datetype=='day'){
+        sql=`select startTime from register where type='${item.type}'`
+    }else if(item.datetype=='month'){
+        sql=`select month from register where type='${item.type}'`        
+    }else{
+        sql=`select year from register where type='${item.type}'`        
+    }
+    
+    db.query(sql, function (err, rows) {
         if (err != null) return;
 
         rows.map(key => {
-            dateArr.push(key.startTime)
+            dateArr.push(key.startTime||key.month||key.year)
         })
     })
     setTimeout(() => {
@@ -878,11 +922,19 @@ app.get('/getDateOfDisc', function (req, res) {
 })
 app.post('/getCountOfDisc', function (req, res) {
     let item = req.body;
-    let date = req.query.type;
+    let date = req.query;
     let result = {};
     let newData = [];
+    let name=''
+    if(date.datetype=='day'){
+        name='startTime'
+    }else if(date.datetype=='month'){
+        name='month'
+    }else{
+        name='year'
+    }
     item.map(key => {
-        db.query(`select count(*) count from register where type='${date}' and startTime='${key}'`, function (err, rows) {
+        db.query(`select count(*) count from register where type='${date.type}' and ${name}='${key}'`, function (err, rows) {
             if (err != null) return;
 
             newData.push(rows[0].count)
