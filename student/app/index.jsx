@@ -13,7 +13,7 @@ const history = createHistory()
 const temp = localStorage.getItem('temp')
 let t = JSON.parse(temp)
 if (t && t.id != null) {
-    history.push('/front/news')
+     history.push('/front/news')
 } else {
     history.push('/login')
 }

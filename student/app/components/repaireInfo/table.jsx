@@ -73,7 +73,7 @@ export default class Repir extends React.Component {
         ]
         return (
             <div className={'cardWrap'} >
-            <Card style={{height:800}} title={<h2>维修列表</h2>}>
+            <Card style={{height:750}} title={<h2>维修列表</h2>}>
                 <div style={{ position: 'relative', bottom: 5, left: '95%' }}><AddRepaire callBack={this.callBack.bind(this)} /></div>
                 
                     <XTable

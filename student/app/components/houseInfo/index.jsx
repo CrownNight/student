@@ -41,13 +41,13 @@ export default class Index extends React.Component {
             <div>
                 <Row gutter={16}>
                     <Col md={24}>
-                        <Card>
+                        <Card style={{overflowY:'hidden'}}>
                             <ReactEcharts
                                 option={option}
                                 style={{ height: 500, width: '100%' }}
                                 className={'react_for_echarts'}
                             />
-                             <div style={{ textAlign: 'center', height: 500 }}>
+                             <div style={{ textAlign: 'center' }}>
                                 <Link to={{ pathname: '/backstage/houseInfo/list', state: 0 }} style={{ fontSize: 16 }}><div>查看已住满列表<Icon type="caret-right" /></div></Link>
                                 <Link to={{ pathname: '/backstage/houseInfo/list', state: 1 }} style={{ fontSize: 16 }}><div>查看未住满列表<Icon type="caret-right" /></div></Link>
                             </div>

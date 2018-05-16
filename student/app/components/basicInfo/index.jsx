@@ -68,7 +68,7 @@ export default class XEcharts extends React.Component {
         return (
             <Row gutter={16}>
                 <Col md={24}>
-                    <div>
+                    <div style={{height:600,overflowY:'auto'}}>
                         <Card bordered={false}>
                             <ReactEcharts
                                 option={option}
@@ -76,7 +76,7 @@ export default class XEcharts extends React.Component {
                                 className={'react_for_echarts'}
                             />
                         </Card>
-                        <div style={{ textAlign: 'center', height: 500 }}>
+                        <div style={{ textAlign: 'center'}}>
                             <Link to='/backstage/basicinfo/list' style={{fontSize:16}}>查看学生详细列表<Icon type="caret-right" /></Link>
                         </div>
                     </div>

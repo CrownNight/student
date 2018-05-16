@@ -73,7 +73,7 @@ export default class Visreg extends React.Component {
         ]
         return (
             <div  className={'cardWrap'}>
-                <Card hoverable='noHovering'  title={<h1>来访登记</h1>} style={{height:800}}>
+                <Card hoverable='noHovering'  title={<h1>来访登记</h1>} style={{height:612}}>
                     <div style={{ position: 'relative', bottom: 5, left: '95%' }}>
                         <AddVisiterInfo callBack={this.callBack.bind(this)} />
                     </div>

@@ -99,7 +99,7 @@ export default class Index extends React.Component {
                                 style={{ height: 500, width: '100%' }}
                                 className={'react_for_echarts'}
                             />
-                            <div style={{ textAlign: 'center', height: 500 }}>
+                            <div style={{ textAlign: 'center'}}>
                                 <Link to='/backstage/visreg/list' style={{ fontSize: 16 }}>查看来访详细列表<Icon type="caret-right" /></Link>
                             </div>
                         </Card>

@@ -62,7 +62,7 @@ export default class HouseInfo extends React.Component {
         return (
             <div className={'cardWrap'}>
                 <Col>
-                    <Card title={<h2>宿舍信息管理</h2>} style={{height:800}}>
+                    <Card title={<h2>宿舍信息管理</h2>} style={{height:597}}>
                         <div style={{ position: 'relative', bottom: 10, left: '93%' }}><AddHouse callBack={this.callBack.bind(this)} /></div>
                         <Col>
                             <XTable columns={columns} data={data} index={index} size={size} total={total} onChange={this.pageChange.bind(this)} />

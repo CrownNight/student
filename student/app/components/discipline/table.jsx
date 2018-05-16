@@ -91,7 +91,7 @@ export default class Discipline extends React.Component {
         ]
         return (
             <div className={'cardWrap'}>
-                <Card title={<h2>学生违纪信息</h2>} style={{height:800}}>
+                <Card title={<h2>学生违纪信息</h2>} style={{height:700}}>
                     <div style={{ position: 'relative', bottom: 5, left: '95%' }}><EditDis callBack={this.callBack.bind(this)} /></div>
                     <XTable
                         data={data}

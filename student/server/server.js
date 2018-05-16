@@ -171,6 +171,42 @@ app.get('/getUserList', function (req, res) {
     })
 })
 
+app.get('/basicSearch',function(req,res){
+    let item=req.query;
+    let index = (item.index - 1) * (item.size)
+    let sql=`select * from user where username like '%${item.keywords}%' or userNumber like '%${item.keywords}%' or house like '%${item.keywords}%'
+    or grade like '%${item.keywords}%' or sex like '%${item.keywords}%' order by userId desc limit ${index},${item.size} `;
+    let result={};
+    db.query(sql,function(err,row){
+        if (!err) {
+            let returnValue = [];
+            row.map(item => {
+                returnValue.push({
+                    key: item.userId,
+                    userId: item.userId,
+                    userName: item.username,
+                    number: item.userNumber,
+                    phone: item.phone,
+                    sex: item.sex,
+                    isAdmin: item.isAdmin,
+                    house: item.house,
+                    profession: item.profession,
+                    grade: item.grade,
+                    college: item.college,
+                    idCard: item.idCard
+                })
+                result.total=returnValue.length
+            })
+            result.returnValue = returnValue;           
+            result.flag = true
+        } else {
+            result.flag = false;
+            result.errorMessage = '获取列表失败'
+        }
+    })
+   setTimeout(()=>{ res.send(result)},100)
+})
+
 app.post('/updateUserinfo', function (req, res) {
     let item = req.body;
     let sql = `update user set username='${item.userName}',userNumber=${item.number ? item.number : ''},sex='${item.sex}',phone=${item.phone},
@@ -178,6 +214,7 @@ app.post('/updateUserinfo', function (req, res) {
     college='${item.college ? item.college : ''}',grade='${item.grade ? item.grade : ''}',idCard='${item.idCard}' where userId=${item.userId}`
     db.query(sql, function (err, rows) {
         let result = {};
+        console.log(err)
         if (!err) {
             result.flag = true;
             result.returnValue = '修改成功';

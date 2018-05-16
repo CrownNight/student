@@ -87,7 +87,7 @@ export default class Index extends React.Component {
                             <div>
                                 <ReactEcharts
                                     option={option}
-                                    style={{ height: 450, width: '100%' }}
+                                    style={{ height: 300, width: '100%' }}
                                     className={'react_for_echarts'}
                                 />
                             </div>

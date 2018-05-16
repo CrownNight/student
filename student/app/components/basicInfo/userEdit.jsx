@@ -23,18 +23,20 @@ class UserEdit extends React.Component {
         this.props.form.validateFields((err, value) => {
             if (err) return;
 
+            value.userId=this.props.data.userId
             webApi.post('/updateUserInfo', value).then(data => {
                 if (data.flag) {
                     message.success(data.returnValue)
                     if (this.props.callBack) {
                         this.props.callBack(data.flag)
                     }
-                    this.setState({
-                        show: false
-                    })
+                   
                 } else {
                     message.error('修改失败')
                 }
+            })
+            this.setState({
+                show: false
             })
 
         })
@@ -113,7 +115,7 @@ class UserEdit extends React.Component {
                                 </FormItem>
                                 <FormItem label='身份证' {...formItemLayout}>
                                     <Col>{getFieldDecorator('idCard', {
-                                        rules: [{ required: true, max: 11, message: '身份证不能为空' }]
+                                        rules: [{ required: true, max: 19, message: '身份证不能为空' }]
                                     })(<Input  />)}</Col>
                                 </FormItem>
                                 <FormItem label='电话' {...formItemLayout}>

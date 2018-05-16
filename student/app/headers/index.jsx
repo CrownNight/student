@@ -31,7 +31,7 @@ export default class SystemHeader extends React.Component {
         return (
             <Menu  mode="horizontal"
             theme='dark'
-            style={{ position: 'fixed', width: '100%', zIndex: 1000, top: 0, height: 78, }}>
+            style={{ position: 'fixed', width: '100%', zIndex: 1000, top: 0, height: 78, zIndex:10000}}>
                 <div style={{ height: 20, width: 20, float: 'left' }}>
                     <img src={require('../../image/5.jpg')} width='200' height='78' />
                 </div>

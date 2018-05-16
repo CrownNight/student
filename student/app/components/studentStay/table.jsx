@@ -12,7 +12,7 @@ export default class Accommodation extends React.Component {
         this.state = {
             data: [],
             index: 1,
-            size: 5,
+            size: 6,
             total: 0,
            // type:this.props.location.state ? this.props.location.state:''
         }
@@ -56,8 +56,8 @@ export default class Accommodation extends React.Component {
             { title: '审核', dataIndex: 'isPass',render:(text,record)=><Examine data={record} callBack={this.callBack.bind(this)}/>  }
         ]
         return (
-            <div style={{position:'absolute',top:0,left:0,width:'100%'}}>
-                <Card title={<h1>学生外宿管理</h1>} style={{height:800}}>
+            <div style={{position:'absolute',top:0,left:0,width:'100%',}}>
+                <Card title={<h1>学生外宿管理</h1>} style={{height:616,overflowY:'hidden'}}>
                     <Row>
                         <Col>
                             <XTable
