@@ -4,7 +4,7 @@ import EditRepaire from './components/editRepaire';
 import AddRepaire from './components/addRepaire';
 import Examine from './components/examine'
 import moment from 'moment';
-import { webApi, XTable } from '../../utils';
+import { webApi, XTable,Search } from '../../utils';
 import '../../index.css'
 
 const FormItem = Form.Item;
@@ -17,7 +17,8 @@ export default class Repir extends React.Component {
             data: [],
             index: 1,
             size: 5,
-            total: 0
+            total: 0,
+            keywords:''
         }
     }
     componentDidMount() {
@@ -51,7 +52,7 @@ export default class Repir extends React.Component {
     }
     pageChange(index, size) {
         this.setState({ index, size })
-        this.getList(index, size);
+        this.state.keywords==''?this.getList(index,size):this.getSearchList(this.state.keywords,index,size);
     }
 
     callBack(sta) {
@@ -59,7 +60,34 @@ export default class Repir extends React.Component {
             this.getList(this.state.index, this.state.size)
         }
     }
-
+    search(value){
+        const {index,size}=this.state;
+        this.setState({keywords:value});
+        value=='' ? this.getList(index,size):this.getSearchList(value,index,size)
+    }
+    getSearchList(keywords,index,size){
+        webApi.get('/getRegisterSearch?keywords='+keywords+'&index='+index+'&size='+size+'&type=repair').then(data=>{
+            let arr=[]
+            if(data.flag){
+                data.returnValue.map(item => {
+                    arr.push({
+                        studentName: item.studentName,
+                        key: item.key,
+                        id: item.id,
+                        des: item.des,
+                        repaireHouse: item.repaireHouse,
+                        startTime: moment(item.startTime).format('YYYY-MM-DD'),
+                        endTime: item.endTime == '' ? '' : moment(item.endTime).format('YYYY-MM-DD'),
+                        status: item.status
+                    })
+                })
+                this.setState({
+                    total: data.total,
+                    data: arr
+                })
+            }
+        })
+    }
     render() {
         const { data, index, size, total } = this.state
         const columns = [
@@ -74,8 +102,10 @@ export default class Repir extends React.Component {
         return (
             <div className={'cardWrap'} >
             <Card style={{height:750}} title={<h2>维修列表</h2>}>
-                <div style={{ position: 'relative', bottom: 5, left: '95%' }}><AddRepaire callBack={this.callBack.bind(this)} /></div>
-                
+                <div style={{ height: 35 }}>
+                            {/* <div style={{ float: 'left', width: 300 }}><Search onSearch={this.search.bind(this)} placeholder='请输入宿舍号/楼栋' /></div> */}
+                            <div style={{ float:'right' }}><AddRepaire callBack={this.callBack.bind(this)} /></div>
+                        </div> 
                     <XTable
                         data={data}
                         columns={columns}

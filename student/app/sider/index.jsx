@@ -24,7 +24,7 @@ export default class SystemSider extends React.Component {
                     </SubMenu>
                     <SubMenu title='学生住宿管理'>
                         <Menu.Item key='2-0'><Link to='/backstage/studentStay'>学生外宿信息</Link></Menu.Item>
-                        <Menu.Item key='2-1'><Link to='/backstage/applyStayOut'>申请外宿或退宿</Link></Menu.Item>
+                        {/* <Menu.Item key='2-1'><Link to='/backstage/applyStayOut'>申请外宿或退宿</Link></Menu.Item> */}
                         {/* <Menu.Item key='2-3'><Link to='/applyOut'>申请退宿</Link></Menu.Item> */}
                     </SubMenu>
                     <SubMenu title='宿舍信息管理'>

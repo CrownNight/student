@@ -171,13 +171,15 @@ app.get('/getUserList', function (req, res) {
     })
 })
 
-app.get('/basicSearch',function(req,res){
-    let item=req.query;
+app.get('/basicSearch', function (req, res) {
+    let item = req.query;
     let index = (item.index - 1) * (item.size)
-    let sql=`select * from user where username like '%${item.keywords}%' or userNumber like '%${item.keywords}%' or house like '%${item.keywords}%'
+    let sql = `select * from user where username like '%${item.keywords}%' or userNumber like '%${item.keywords}%' or house like '%${item.keywords}%'
     or grade like '%${item.keywords}%' or sex like '%${item.keywords}%' order by userId desc limit ${index},${item.size} `;
-    let result={};
-    db.query(sql,function(err,row){
+    let sql1 = `select count(*) count from user where username like '%${item.keywords}%' or userNumber like '%${item.keywords}%' or house like '%${item.keywords}%'
+    or grade like '%${item.keywords}%' or sex like '%${item.keywords}%'`
+    let result = {};
+    db.query(sql, function (err, row) {
         if (!err) {
             let returnValue = [];
             row.map(item => {
@@ -195,21 +197,23 @@ app.get('/basicSearch',function(req,res){
                     college: item.college,
                     idCard: item.idCard
                 })
-                result.total=returnValue.length
+                db.query(sql1, function (e, rows) {
+                    result.total = e != null ? 0 : rows[0].count
+                })
             })
-            result.returnValue = returnValue;           
+            result.returnValue = returnValue;
             result.flag = true
         } else {
             result.flag = false;
             result.errorMessage = '获取列表失败'
         }
     })
-   setTimeout(()=>{ res.send(result)},100)
+    setTimeout(() => { res.send(result) }, 100)
 })
 
 app.post('/updateUserinfo', function (req, res) {
     let item = req.body;
-    let sql = `update user set username='${item.userName}',userNumber=${item.number ? item.number : ''},sex='${item.sex}',phone=${item.phone},
+    let sql = `update user set username='${item.userName}',userNumber='${item.number ? item.number : ''}',sex='${item.sex}',phone='${item.phone}',
     house='${item.house ? item.house : ''}',profession='${item.profession ? item.profession : ''}',
     college='${item.college ? item.college : ''}',grade='${item.grade ? item.grade : ''}',idCard='${item.idCard}' where userId=${item.userId}`
     db.query(sql, function (err, rows) {
@@ -383,8 +387,8 @@ app.get('/getHouseInfoList', function (req, res) {
     let result = {};
     let value = [];
     let index = (item.index - 1) * item.size;
-    let sql = `select * from building where `+ (item.count==0 ? `empty=${item.count}`:`empty!=0`)  +` order by id desc limit ${index},${item.size}`;
-    let sql1 = `select count(*) count from building where `+(item.count==0 ? ` empty=${item.count}`:` empty!=0`);
+    let sql = `select * from building where ` + (item.count == 0 ? `empty=${item.count}` : `empty!=0`) + ` order by id desc limit ${index},${item.size}`;
+    let sql1 = `select count(*) count from building where ` + (item.count == 0 ? ` empty=${item.count}` : ` empty!=0`);
     db.query(sql1, function (err, rows) {
         if (err != null) return;
 
@@ -536,8 +540,8 @@ app.get('/getRegisterInfo', function (req, res) {
 app.post('/updateRegisterInfo', function (req, res) {
     let result = {};
     let item = req.body;
-    let month = item.startTime.substr(6,1);
-    let year = item.startTime.substr(0,4)
+    let month = item.startTime.substr(6, 1);
+    let year = item.startTime.substr(0, 4)
     let sql = `update register set name='${item.studentName ? item.studentName : ''}',visName='${item.visName ? item.visName : ''}',
     startTime='${item.startTime ? item.startTime : ''}',endTime='${item.endTime ? item.endTime : ''}',
     relationship='${item.relationship ? item.relationship : ''}',idCard='${item.idCard ? item.idCard : ''}',
@@ -564,8 +568,8 @@ app.post('/deleteRegisterInfo', function (req, res) {
 app.post('/addRegisterInfo', function (req, res) {
     let result = {};
     let item = req.body;
-    let month = item.startTime.substr(6,1)
-    let year = item.startTime.substr(0,4) 
+    let month = item.startTime.substr(6, 1)
+    let year = item.startTime.substr(0, 4)
     let sql = `insert into register (name,visName,startTime,endTime,relationship,idCard,Des,status,repaireHouse,class,borrowSth,discipline,type,month,year) values 
     ('${item.studentName ? item.studentName : ''}','${item.visName ? item.visName : ''}','${item.startTime ? item.startTime : ''}','${item.endTime ? item.endTime : ''}',
     '${item.relationship ? item.relationship : ''}','${item.idCard ? item.idCard : ''}','${item.des ? item.des : ''}','${item.status ? item.status : ''}',
@@ -594,20 +598,20 @@ app.get('/getDateForVister', function (req, res) {
     let item = req.query
     let result = {};
     let row = []
-    let sql=''
-    if(item.datetype=='day'){
+    let sql = ''
+    if (item.datetype == 'day') {
         sql = `select startTime from register where type='${item.type}'`;
-    }else if(item.datetype=='month'){
-        sql=`select month from register where type='${item.type}'`
-    }else{
-        sql=`select year from register where type='${item.type}'`
+    } else if (item.datetype == 'month') {
+        sql = `select month from register where type='${item.type}'`
+    } else {
+        sql = `select year from register where type='${item.type}'`
     }
 
     db.query(sql, function (err, rows) {
         if (err != null) return;
 
         rows.map(key => {
-            row.push(key.startTime||key.month||key.year)
+            row.push(key.startTime || key.month || key.year)
         })
         setTimeout(() => {
             result.flag = true
@@ -621,17 +625,17 @@ app.post('/getCountForVister', function (req, res) {
     let arr = [];
     let item = req.body;
     let ty = req.query
-    let type=''
-    if(ty.datetype=='day'){
-        type='startTime'
-    }else if(ty.datetype=='month'){
-        type='month'
-    }else{
-        type='year'
+    let type = ''
+    if (ty.datetype == 'day') {
+        type = 'startTime'
+    } else if (ty.datetype == 'month') {
+        type = 'month'
+    } else {
+        type = 'year'
     }
-    
+
     item.map(key => {
-        let sql=`select count(*) count from register where ${type}='${key}' and type='${ty.type}'`
+        let sql = `select count(*) count from register where ${type}='${key}' and type='${ty.type}'`
         db.query(sql, function (err, rows) {
             if (err != null) return;
 
@@ -712,20 +716,20 @@ app.get('/getRepaireStatus', function (req, res) {
 app.get('/getDateForRepaire', function (req, res) {
     let item = req.query;
     let result = {};
-    let sql=''
-    if(item.datetype=='day'){
-       sql = `select startTime from register where type='${item.type}'`;
-    }else if(item.datetype=='month'){
+    let sql = ''
+    if (item.datetype == 'day') {
+        sql = `select startTime from register where type='${item.type}'`;
+    } else if (item.datetype == 'month') {
         sql = `select month from register where type='${item.type}'`;
-    }else{
-        sql = `select year from register where type='${item.type}'`;        
+    } else {
+        sql = `select year from register where type='${item.type}'`;
     }
     db.query(sql, function (err, rows) {
         if (err != null) return;
 
         let arr = [];
         rows.map(key => {
-            arr.push(key.startTime||key.month||key.year);
+            arr.push(key.startTime || key.month || key.year);
         })
         setTimeout(() => {
             result.flag = true;
@@ -739,16 +743,16 @@ app.post('/getCountForRepaire', function (req, res) {
     let date = req.query;
     let result = {};
     let newArr = [];
-    let dateType=''
-    if(date.datetype=='day'){
-        dateType='startTime'
-    }else if(date.datetype=='month'){
-        dateType='month'
-    }else{
-        dateType='year'
+    let dateType = ''
+    if (date.datetype == 'day') {
+        dateType = 'startTime'
+    } else if (date.datetype == 'month') {
+        dateType = 'month'
+    } else {
+        dateType = 'year'
     }
     item.map(key => {
-        let sql=`select count(*) count from register where ${dateType}='${key}' and type='${date.type}' and status='未解决'`
+        let sql = `select count(*) count from register where ${dateType}='${key}' and type='${date.type}' and status='未解决'`
         db.query(sql, function (err, rows) {
             if (err != null) return;
 
@@ -844,18 +848,18 @@ app.get('/getDateForBorrow', function (req, res) {
     let result = {};
     let date = [];
     let sql = '';
-    if(item.datetype=='day'){
-        sql=`select startTime from register where type='${item.type}' and status='${item.status}'`
-    }else if(item.datetype=='month'){
-        sql=`select month from register where type='${item.type}' and status='${item.status}'`        
-    }else{
-        sql=`select year from register where type='${item.type}' and status='${item.status}'`        
+    if (item.datetype == 'day') {
+        sql = `select startTime from register where type='${item.type}' and status='${item.status}'`
+    } else if (item.datetype == 'month') {
+        sql = `select month from register where type='${item.type}' and status='${item.status}'`
+    } else {
+        sql = `select year from register where type='${item.type}' and status='${item.status}'`
     }
     db.query(sql, function (err, rows) {
         if (err != null) return;
 
         rows.map(key => {
-            date.push(key.startTime||key.month||key.year)
+            date.push(key.startTime || key.month || key.year)
         })
         setTimeout(() => {
             result.flag = true;
@@ -870,13 +874,13 @@ app.post('/getCountForBorrow', function (req, res) {
     let item = req.query;
     let result = {};
     let count = [];
-    let name=''
-    if(item.datetype=='day'){
-        name='startTime'
-    }else if(item.datetype=='month'){
-        name='month'
-    }else{
-        name='year'
+    let name = ''
+    if (item.datetype == 'day') {
+        name = 'startTime'
+    } else if (item.datetype == 'month') {
+        name = 'month'
+    } else {
+        name = 'year'
     }
     date.map(key => {
         db.query(`select count(*) data from register where status='${item.status}' and ${name}='${key}'`, function (err, rows) {
@@ -935,20 +939,20 @@ app.get('/getDateOfDisc', function (req, res) {
     let item = req.query;
     let result = {};
     let dateArr = [];
-    let sql='';
-    if(item.datetype=='day'){
-        sql=`select startTime from register where type='${item.type}'`
-    }else if(item.datetype=='month'){
-        sql=`select month from register where type='${item.type}'`        
-    }else{
-        sql=`select year from register where type='${item.type}'`        
+    let sql = '';
+    if (item.datetype == 'day') {
+        sql = `select startTime from register where type='${item.type}'`
+    } else if (item.datetype == 'month') {
+        sql = `select month from register where type='${item.type}'`
+    } else {
+        sql = `select year from register where type='${item.type}'`
     }
-    
+
     db.query(sql, function (err, rows) {
         if (err != null) return;
 
         rows.map(key => {
-            dateArr.push(key.startTime||key.month||key.year)
+            dateArr.push(key.startTime || key.month || key.year)
         })
     })
     setTimeout(() => {
@@ -962,13 +966,13 @@ app.post('/getCountOfDisc', function (req, res) {
     let date = req.query;
     let result = {};
     let newData = [];
-    let name=''
-    if(date.datetype=='day'){
-        name='startTime'
-    }else if(date.datetype=='month'){
-        name='month'
-    }else{
-        name='year'
+    let name = ''
+    if (date.datetype == 'day') {
+        name = 'startTime'
+    } else if (date.datetype == 'month') {
+        name = 'month'
+    } else {
+        name = 'year'
     }
     item.map(key => {
         db.query(`select count(*) count from register where type='${date.type}' and ${name}='${key}'`, function (err, rows) {
@@ -1020,7 +1024,79 @@ app.get('/getRegisterInfoOfDisc', function (req, res) {
         })
     })
 })
+//搜索api
+app.get('/housesearch', function (req, res) {
+    let result = {};
+    let item = req.query;
+    let index = (item.index - 1) * item.size;
+    let sql = `select count(*) count from building where house like '%${item.keywords}%' or building like '%${item.keywords}%'`;
+    let sql1 = `select * from building where house like '%${item.keywords}%' or building like '%${item.keywords}%' order by id desc limit ${index},${item.size}`;
+    db.query(sql, function (e, row) {
+        result.total = e != null ? 0 : row[0].count;
 
+        db.query(sql1, function (err, rows) {
+            if (err == null) {
+                let arr = [];
+                rows.map(key => {
+                    arr.push({
+                        key: key.id,
+                        id: key.id,
+                        house: key.house,
+                        building: key.building,
+                        dispenser: key.dispenser,
+                        bed: key.bed,
+                        tables: key.tables,
+                        empty: key.empty,
+                        haspeople: key.haspeople
+                    })
+                })
+                result.flag = true;
+                result.returnValue = arr;
+            } else {
+                result.flag = false
+            }
+        })
+    })
+    setTimeout(() => { res.send(result) }, 100)
+})
+//register查询
+app.get('/getRegisterSearch', function (req, res) {
+    let item = req.query;
+    let result = {};
+    let index=(item.index-1)*item.size;
+    let sql = `select count(*) count from register where (name like '%${item.keywords}%' or startTime like '%${item.keywords}%') and type='${item.type}'`
+    let sql1= `select * from register where (name like '%${item.keywords}%' or startTime like '%${item.keywords}%') and type='${item.type}' order by id desc limit ${index},${item.size}`;
+    db.query(sql,function(e,row){
+        result.total=e!=null?0:row[0].count;
+
+        db.query(sql1,function(err,rows){
+            if(err==null){
+                let data = [];
+                rows.map(key => {
+                    data.push({
+                        key: key.id,
+                        id: key.id,
+                        studentName: key.name,
+                        visName: key.visName,
+                        startTime: key.startTime,
+                        relationship: key.relationship,
+                        idCard: key.idCard,
+                        des: key.Des,
+                        endTime: key.endTime,
+                        status: key.status,
+                        repaireHouse: key.repaireHouse,
+                        class: key.class,
+                        borrowSth: key.borrowSth,
+                        discipline: key.discipline
+                    })
+                })
+                result.flag=true;
+                result.returnValue=data;
+            }
+        })
+    })
+    setTimeout(()=>{res.send(result)},100)
+})
 
 
 

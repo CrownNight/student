@@ -19,13 +19,13 @@ class EditAdmin extends React.Component {
             show: true
         })
     }
-    handleOk() {
+    handleOk() {    
         this.props.form.validateFields((err, value) => {
             if (err) return;
-
+            value.userId=this.props.data.userId;
             webApi.post('/updateUserInfo', value).then(data => {
                 if (data.flag) {
-                    message.success(data.returnValue)
+                    message.info('修改成功')
                     if (this.props.callBack) {
                         this.props.callBack(data.flag)
                     }

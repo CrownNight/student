@@ -42,11 +42,11 @@ export default class BasicInfo extends React.Component {
         if(this.state.keywords==''){
             this.getUserList(index, size);
         }else{
-            this.searchAPI(this.state.keywords)
+            this.searchAPI(this.state.keywords,index,size)
         }
     }
-    searchAPI(value,){
-        webApi.get('/basicSearch?keywords='+value+'&index='+this.state.index+'&size='+this.state.size).then(item=>{
+    searchAPI(value,index,size){
+        webApi.get('/basicSearch?keywords='+value+'&index='+index+'&size='+size).then(item=>{
             if(item.flag){
                 this.setState({
                     data:item.returnValue,
@@ -59,11 +59,12 @@ export default class BasicInfo extends React.Component {
 
     search(value){  
         this.setState({keywords:value}) 
-       if(value==''){
         const { index, size } = this.state;
+       if(value==''){
+       
         this.getUserList(index, size);
        }else{
-        this.searchAPI(value)
+        this.searchAPI(value,index,size)
        }
     }
     render() {

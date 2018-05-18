@@ -4,7 +4,7 @@ import moment from 'moment'
 import './index.css'
 import AddVisiterInfo from './components/addVisitInfo';
 import EditVisiterInfo from './components/EditVisitInfo'
-import { webApi, XTable } from '../../utils';
+import { webApi, XTable,Search } from '../../utils';
 import '../../index.css'
 
 const FormItem = Form.Item;
@@ -17,7 +17,8 @@ export default class Visreg extends React.Component {
             index: 1,
             size: 5,
             total: 0,
-            data: []
+            data: [],
+            keywords:''
         }
     }
     componentDidMount() {
@@ -50,7 +51,11 @@ export default class Visreg extends React.Component {
 
     pageSizeChange(index, size) {
         this.setState({ index, size });
-        this.getList(index, size);
+        if(this.state.keywords==''){
+            this.getList(index, size);
+        }else{
+            this.getSearchList(this.state.keywords,index,size)
+        }
     }
 
     callBack(sta) {
@@ -58,6 +63,38 @@ export default class Visreg extends React.Component {
         if (sta) {
             this.getList(index, size);
         }
+    }
+    search(value){
+        const {index,size}=this.state;
+        this.setState({keywords:value});
+        if(value==''){
+            this.getList(index,size)
+        }else{
+            this.getSearchList(value,index,size)
+        }
+    }
+    getSearchList(keywords,index,size){
+        webApi.get('/getRegisterSearch?keywords='+keywords+'&index='+index+'&size='+size+'&type=regis').then(data=>{
+            let arr=[]
+            if(data.flag){
+                data.returnValue.map(key=>{
+                    arr.push({
+                     startTime:moment(key.startTime).format('YYYY-MM-DD'),
+                     key:key.id,
+                     id:key.id,
+                     visName:key.visName,
+                     studentName:key.studentName,
+                     idCard:key.idCard,
+                     relationship:key.relationship,
+                     des:key.des
+                    })
+                 })              
+                 this.setState({                   
+                     data: arr,
+                     total: data.total
+                 })
+            }
+        })
     }
 
     render() {
@@ -74,9 +111,10 @@ export default class Visreg extends React.Component {
         return (
             <div  className={'cardWrap'}>
                 <Card hoverable='noHovering'  title={<h1>来访登记</h1>} style={{height:612}}>
-                    <div style={{ position: 'relative', bottom: 5, left: '95%' }}>
-                        <AddVisiterInfo callBack={this.callBack.bind(this)} />
-                    </div>
+                    <div style={{ height: 35 }}>
+                            <div style={{ float: 'left', width: 300 }}><Search onSearch={this.search.bind(this)} placeholder='请输入学生姓名/来访时间' /></div>
+                            <div style={{ float:'right' }}><AddVisiterInfo callBack={this.callBack.bind(this)} /></div>
+                        </div> 
                     <XTable
                         columns={columns}
                         data={data}

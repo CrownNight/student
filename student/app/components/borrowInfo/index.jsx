@@ -2,10 +2,10 @@ import React from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { Link } from 'react-router-dom';
 import { webApi } from '../../utils';
-import { Card, Row, Col, message, Icon,Radio } from 'antd';
+import { Card, Row, Col, message, Icon, Radio } from 'antd';
 import PieEcharts from './components/pieCharts';
 
-const RadioGroup=Radio.Group;
+const RadioGroup = Radio.Group;
 const RadioButton = Radio.Button;
 
 export default class Index extends React.Component {
@@ -14,15 +14,15 @@ export default class Index extends React.Component {
         this.state = {
             data: [],
             date: [],
-            type:'day'
+            type: 'day'
         }
     }
 
     componentDidMount() {
         this.getList(this.state.type)
     }
-    getList(type){
-        webApi.get('/getDateForBorrow?type=borrow&status=未归还&datetype='+type).then(data => {
+    getList(type) {
+        webApi.get('/getDateForBorrow?type=borrow&status=未归还&datetype=' + type).then(data => {
             if (data.flag) {
                 let arr = data.returnValue;
                 let newArr = [];
@@ -33,7 +33,7 @@ export default class Index extends React.Component {
                 }
                 newArr.sort();
                 this.setState({ date: newArr });
-                webApi.post('/getCountForBorrow?status=未归还&datetype='+type, newArr).then(item => {
+                webApi.post('/getCountForBorrow?status=未归还&datetype=' + type, newArr).then(item => {
                     if (item.flag) {
                         this.setState({ data: item.returnValue })
                     } else {
@@ -46,8 +46,8 @@ export default class Index extends React.Component {
         })
     }
 
-    handleChange(e){
-        this.setState({type:e.target.value});
+    handleChange(e) {
+        this.setState({ type: e.target.value });
         this.getList(e.target.value)
     }
 
@@ -79,7 +79,7 @@ export default class Index extends React.Component {
                 <Row gutter={16}>
                     <Col md={24}>
                         <Card style={{ height: '800px' }}>
-                        <RadioGroup defaultValue='day' size='large' onChange={this.handleChange.bind(this)} value={this.state.type}>
+                            <RadioGroup defaultValue='day' size='large' onChange={this.handleChange.bind(this)} value={this.state.type}>
                                 <RadioButton value='day'>按天</RadioButton>
                                 <RadioButton value='month'>按月</RadioButton>
                                 <RadioButton value='year'>按年</RadioButton>
@@ -91,13 +91,11 @@ export default class Index extends React.Component {
                                     className={'react_for_echarts'}
                                 />
                             </div>
-                            <div>
-                                <PieEcharts />
-                                <div style={{ textAlign: 'center', }}>
-                                    <Link to={{ pathname: '/backstage/borrow/list', state: '已归还' }} style={{ fontSize: 16 }}>查看已归还列表<Icon type="caret-right" /></Link>
-                                    <Link to={{ pathname: '/backstage/borrow/list', state: '未归还' }} style={{ fontSize: 16, marginLeft: 10 }}>查看未归还列表<Icon type="caret-right" /></Link>
-                                </div>
+                            <div style={{ textAlign: 'center',marginLeft:-800}}>
+                                <Link to={{ pathname: '/backstage/borrow/list', state: '已归还' }} style={{ fontSize: 16 }}>查看已归还列表<Icon type="caret-right" /></Link>
+                                <Link to={{ pathname: '/backstage/borrow/list', state: '未归还' }} style={{ fontSize: 16, marginLeft: 10 }}>查看未归还列表<Icon type="caret-right" /></Link>
                             </div>
+                            <PieEcharts />
                         </Card>
                     </Col>
                 </Row>

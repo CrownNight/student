@@ -13,6 +13,7 @@ class EditRepaire extends React.Component {
     }
 
     showModal() {
+       if(this.props.data){
         this.props.data.startTime = moment(this.props.data.startTime, 'YYYY-MM-DD')
         //this.props.data.endTime = this.props.data.endTime == '' ? '' : moment(this.props.data.endTime, 'YYYY-MM-DD')
         let result={
@@ -22,6 +23,7 @@ class EditRepaire extends React.Component {
             status:this.props.data.status
         }
         this.props.form.setFieldsValue(result)
+       }
         this.setState({
             show: true
         })
@@ -39,7 +41,7 @@ class EditRepaire extends React.Component {
             value.startTime = this.state.date
             webApi.post('/updateRegisterInfo', value).then(data => {
                 if (data.flag) {
-                    message.info(data.returnValue);
+                    message.info('修改成功');
                     if (this.props.callBack) {
                         this.props.callBack(data.flag)
                     }
@@ -59,7 +61,7 @@ class EditRepaire extends React.Component {
         condition.id = this.props.data.id;
         webApi.post('/deleteRegisterInfo', condition).then(data => {
             if (data.flag) {
-                message.info(data.returnValue);
+                message.info('删除成功');
                 if (this.props.callBack) {
                     this.props.callBack(data.flag)
                 }
@@ -95,7 +97,7 @@ class EditRepaire extends React.Component {
                             </Col>
                             <Col>
                                 <FormItem label='报修时间' {...formItemLayout}>
-                                    <DatePicker placeholder='请选择日期' onChange={this.dateChange.bind(this)} />
+                                    <DatePicker defaultValue={moment(this.props.data.startTime,'YYYY-MM-DD')} placeholder='请选择日期' onChange={this.dateChange.bind(this)} />
                                 </FormItem>
                             </Col>
                             {/* <Col>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Button, Popconfirm, message, Card } from 'antd';
 import '../../index.css';
 import EditDis from './components/editDis';
-import { webApi, XTable } from '../../utils';
+import { webApi, XTable, Search } from '../../utils';
 import moment from 'moment'
 import '../../index.css'
 
@@ -14,7 +14,8 @@ export default class Discipline extends React.Component {
             index: 1,
             size: 5,
             total: 0,
-            data: []
+            data: [],
+            keywords:''
         }
     }
     componentDidMount() {
@@ -59,13 +60,39 @@ export default class Discipline extends React.Component {
 
     pageChange(index, size) {
         this.setState({ index, size });
-        this.getList(index, size)
+        this.state.keywords == '' ? this.getList(index, size) : this.getSearchList(this.state.keywords, index, size)
     }
 
     callBack(sta) {
         if (sta) {
             this.getList(this.state.index, this.state.size)
         }
+    }
+    search(value) {
+        const { index, size } = this.state;
+        this.setState({ keywords: value });
+        value == '' ? this.getList(index, size) : this.getSearchList(value, index, size)
+    }
+    getSearchList(keywords, index, size) {
+        webApi.get('/getRegisterSearch?keywords=' + keywords + '&index=' + index + '&size=' + size + '&type=disc').then(data => {
+            if (data.flag) {
+                let arr = [];
+                data.returnValue.map(key => {
+                    arr.push({
+                        startTime: moment(key.startTime).format('YYYY-MM-DD'),
+                        key: key.key,
+                        id: key.id,
+                        studentName: key.studentName,
+                        discipline: key.discipline,
+                        des: key.des
+                    })
+                })
+                this.setState({
+                    data: arr,
+                    total: data.total
+                })
+            }
+        })
     }
     render() {
         const { data, index, size, total } = this.state
@@ -91,8 +118,11 @@ export default class Discipline extends React.Component {
         ]
         return (
             <div className={'cardWrap'}>
-                <Card title={<h2>学生违纪信息</h2>} style={{height:700}}>
-                    <div style={{ position: 'relative', bottom: 5, left: '95%' }}><EditDis callBack={this.callBack.bind(this)} /></div>
+                <Card title={<h2>学生违纪信息</h2>} style={{ height: 700 }}>
+                    <div style={{ height: 35 }}>
+                        {/* <div style={{ float: 'left', width: 300 }}><Search onSearch={this.search.bind(this)} placeholder='请输入宿舍号/楼栋' /></div> */}
+                        <div style={{ float: 'right' }}><EditDis callBack={this.callBack.bind(this)} /></div>
+                    </div>
                     <XTable
                         data={data}
                         columns={columns}

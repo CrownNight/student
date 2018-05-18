@@ -68,7 +68,7 @@ class AddNews extends React.Component {
                             <FormItem label='内容'>
                                 {getFieldDecorator('content', {
                                     rules: [{ required: true }]
-                                })(<TextArea rows='10' />)}
+                                })(<TextArea rows='8' />)}
                             </FormItem>
                         </Col>
                     </Row>

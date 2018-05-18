@@ -20,7 +20,7 @@ export default class Index extends React.Component {
     }
     render() {
         return (
-            <div>
+            <div style={{height:750}}>
                 <Row gutter={16}>
                     <Col md={24}>
                         <Card>
